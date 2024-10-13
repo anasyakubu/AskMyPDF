@@ -2,7 +2,9 @@ import React, { useState, useRef } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Initialize the Gemini API client
-const genAI = new GoogleGenerativeAI("YOUR_API_KEY");
+const genAI = new GoogleGenerativeAI(
+  import.meta.env.VITE_GOOGLE_GENERATIVE_AI_API_KEY
+);
 
 const PDFChatComponent = () => {
   const [file, setFile] = useState<File | null>(null);
