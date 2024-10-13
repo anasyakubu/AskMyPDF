@@ -57,7 +57,7 @@ const PDFChatComponent = () => {
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       const result = await model.generateContent(
-        `Generate 3 questions based on the content of the file: ${file.name}`
+        `Generate 5 questions based on the content of the file: ${file.name}`
       );
       const response = result.response;
       setChat((prevChat) => [
