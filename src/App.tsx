@@ -1,6 +1,7 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Chat from "./pages/Chat/Chat";
+import Voice from "./pages/Voice/Voice";
 // import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -11,7 +12,7 @@ function App() {
         <BrowserRouter>
           <Routes>
             <Route path="/" element={<Chat />}></Route>
-            {/* <Route path="/Projects" element={<Projects />}></Route> */}
+            <Route path="/Voice" element={<Voice />}></Route>
           </Routes>
         </BrowserRouter>
       </div>

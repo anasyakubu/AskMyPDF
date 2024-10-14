@@ -64,7 +64,7 @@ const PDFChatComponent = () => {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       const result = await model.generateContent(`
         Document content: ${documentContent.substring(0, 1000)}...
-        
+    
         Based on the above document content, please respond to the following: ${userInput}
       `);
       const response = result.response;
