@@ -1,4 +1,4 @@
-import React, { useState, useEffect, useCallback } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
 // Initialize the Gemini API client
@@ -6,18 +6,32 @@ const genAI = new GoogleGenerativeAI(
   import.meta.env.VITE_GOOGLE_GENERATIVE_AI_API_KEY
 );
 
+// Add type declarations for webkit prefixed interfaces
+interface IWebkitSpeechRecognition extends SpeechRecognition {}
+interface IWebkitSpeechRecognitionEvent extends SpeechRecognitionEvent {}
+
+// Add the necessary types for SpeechRecognition and its event
+type SpeechRecognition = typeof window.webkitSpeechRecognition;
+type SpeechRecognitionEvent = typeof window.webkitSpeechRecognitionEvent;
+
+declare global {
+  interface Window {
+    webkitSpeechRecognition: new () => IWebkitSpeechRecognition;
+  }
+}
+
 const VoiceInteractionComponent = () => {
   const [isListening, setIsListening] = useState(false);
   const [speechText, setSpeechText] = useState("");
   const [responseText, setResponseText] = useState("");
   const [isPaused, setIsPaused] = useState(false);
 
-  let recognition: SpeechRecognition | null = null;
+  let recognition: IWebkitSpeechRecognition | null = null;
   let speechSynthesis: SpeechSynthesis | null = null;
 
   useEffect(() => {
     if ("webkitSpeechRecognition" in window) {
-      recognition = new webkitSpeechRecognition();
+      recognition = new window.webkitSpeechRecognition();
       recognition.continuous = true;
       recognition.interimResults = true;
     }
@@ -39,14 +53,14 @@ const VoiceInteractionComponent = () => {
       recognition.start();
       setIsListening(true);
 
-      recognition.onresult = (event) => {
+      recognition.onresult = (event: IWebkitSpeechRecognitionEvent) => {
         const transcript = Array.from(event.results)
           .map((result) => result[0].transcript)
           .join("");
         setSpeechText(transcript);
       };
 
-      recognition.onerror = (event) => {
+      recognition.onerror = (event: SpeechRecognitionErrorEvent) => {
         console.error("Speech recognition error", event.error);
         setIsListening(false);
       };
@@ -70,13 +84,14 @@ const VoiceInteractionComponent = () => {
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
       const result = await model.generateContent(speechText);
-      const response = result.response;
-      setResponseText(response.text());
-      speakResponse(response.text());
+      const response = result?.response?.text ? result.response.text() : "";
+      setResponseText(response);
+      speakResponse(response);
     } catch (error) {
       console.error("Error communicating with Gemini API:", error);
-      setResponseText("Sorry, there was an error processing your request.");
-      speakResponse("Sorry, there was an error processing your request.");
+      const errorMessage = "Sorry, there was an error processing your request.";
+      setResponseText(errorMessage);
+      speakResponse(errorMessage);
     }
   };
 
@@ -107,6 +122,12 @@ const VoiceInteractionComponent = () => {
     }
   };
 
+  const handleTextareaChange = (
+    event: React.ChangeEvent<HTMLTextAreaElement>
+  ) => {
+    setSpeechText(event.target.value);
+  };
+
   return (
     <div className="container mx-auto p-4">
       <h2 className="text-xl font-bold mb-4">Voice Interaction</h2>
@@ -123,7 +144,7 @@ const VoiceInteractionComponent = () => {
       <div className="mb-4">
         <textarea
           value={speechText}
-          onChange={(e) => setSpeechText(e.target.value)}
+          onChange={handleTextareaChange}
           className="w-full p-2 border rounded"
           rows={4}
           placeholder="Spoken text will appear here..."
