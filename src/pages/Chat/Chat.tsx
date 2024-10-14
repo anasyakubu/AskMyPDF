@@ -8,16 +8,45 @@ const genAI = new GoogleGenerativeAI(
 
 const PDFChatComponent = () => {
   const [file, setFile] = useState<File | null>(null);
+  const [documentContent, setDocumentContent] = useState<string>("");
   const [chat, setChat] = useState<string[]>([]);
   const [userInput, setUserInput] = useState("");
   const [isLoading, setIsLoading] = useState(false);
   const fileInputRef = useRef<HTMLInputElement>(null);
 
-  const handleFileUpload = (event: React.ChangeEvent<HTMLInputElement>) => {
+  const extractDocumentContent = async (file: File): Promise<string> => {
+    // This is a placeholder function. In a real implementation,
+    // you'd use a library like pdf.js for PDFs or mammoth for DOC files.
+    return new Promise((resolve) => {
+      const reader = new FileReader();
+      reader.onload = (e) => {
+        const text = e.target?.result;
+        resolve(text as string);
+      };
+      reader.readAsText(file);
+    });
+  };
+
+  const handleFileUpload = async (
+    event: React.ChangeEvent<HTMLInputElement>
+  ) => {
     const uploadedFile = event.target.files?.[0];
     if (uploadedFile) {
       setFile(uploadedFile);
-      setChat([`File uploaded: ${uploadedFile.name}`]);
+      setIsLoading(true);
+      try {
+        const content = await extractDocumentContent(uploadedFile);
+        setDocumentContent(content);
+        setChat([
+          `File uploaded: ${uploadedFile.name}`,
+          "AI: Document processed. You can now chat about its contents.",
+        ]);
+      } catch (error) {
+        console.error("Error processing document:", error);
+        setChat(["Error processing document. Please try again."]);
+      } finally {
+        setIsLoading(false);
+      }
     }
   };
 
@@ -26,14 +55,18 @@ const PDFChatComponent = () => {
   };
 
   const handleSendMessage = async () => {
-    if (!file || !userInput.trim()) return;
+    if (!file || !userInput.trim() || !documentContent) return;
 
     setIsLoading(true);
     setChat((prevChat) => [...prevChat, `You: ${userInput}`]);
 
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const result = await model.generateContent(userInput);
+      const result = await model.generateContent(`
+        Document content: ${documentContent.substring(0, 1000)}...
+        
+        Based on the above document content, please respond to the following: ${userInput}
+      `);
       const response = result.response;
       setChat((prevChat) => [...prevChat, `AI: ${response.text()}`]);
     } catch (error) {
@@ -49,16 +82,18 @@ const PDFChatComponent = () => {
   };
 
   const handleGenerateQuestions = async () => {
-    if (!file) return;
+    if (!file || !documentContent) return;
 
     setIsLoading(true);
     setChat((prevChat) => [...prevChat, "Generating questions..."]);
 
     try {
       const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const result = await model.generateContent(
-        `Generate 5 questions based on the content of the file: ${file.name}`
-      );
+      const result = await model.generateContent(`
+        Document content: ${documentContent.substring(0, 1000)}...
+        
+        Based on the above document content, generate 5 relevant questions.
+      `);
       const response = result.response;
       setChat((prevChat) => [
         ...prevChat,
@@ -88,6 +123,7 @@ const PDFChatComponent = () => {
       <button
         onClick={() => fileInputRef.current?.click()}
         className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
+        disabled={isLoading}
       >
         Upload PDF/DOC
       </button>
@@ -116,12 +152,12 @@ const PDFChatComponent = () => {
           value={userInput}
           onChange={handleUserInput}
           className="flex-grow border p-2 mr-2"
-          placeholder="Type your message..."
+          placeholder="Chat about the document or ask questions..."
         />
         <button
           onClick={handleSendMessage}
           className="bg-blue-500 text-white px-4 py-2 rounded"
-          disabled={isLoading || !file}
+          disabled={isLoading || !file || !documentContent}
         >
           Send
         </button>
