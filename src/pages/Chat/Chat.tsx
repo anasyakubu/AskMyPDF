@@ -56,7 +56,6 @@ const PDFChatComponent = () => {
 
   const handleSendMessage = async () => {
     if (!file || !userInput.trim() || !documentContent) return;
-
     setIsLoading(true);
     setChat((prevChat) => [...prevChat, `You: ${userInput}`]);
 

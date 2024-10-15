@@ -12,6 +12,8 @@
   "dependencies": {
     "@google/generative-ai": "^0.6.0",
     "generative-ai": "^0.1.4",
+    "llamaai": "^1.0.4",
+    "llm-api": "^1.6.0",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "react-helmet": "^6.1.0",
