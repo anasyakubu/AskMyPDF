@@ -9,6 +9,7 @@ const genAI = new GoogleGenerativeAI(
 interface Question {
   question: string;
   options: string[];
+  error: string;
   correctAnswer: string;
   userAnswer: string | null;
   isCorrect: boolean | null; // Added to track if the answer is correct
@@ -64,7 +65,9 @@ const DocumentQuizComponent = () => {
     try {
       return await fn();
     } catch (error) {
-      if (retries === 0 || error.response?.status !== 429) throw error;
+      // TODO: To something With the bloW comment code
+      //  || error.response?.status !== 429
+      if (retries === 0) throw error;
       console.warn(`Retrying after ${delay}ms due to rate limiting...`);
       await new Promise((resolve) => setTimeout(resolve, delay));
       return retryWithBackoff(fn, retries - 1, delay * 2); // Exponential backoff
@@ -99,7 +102,7 @@ const DocumentQuizComponent = () => {
 
       // Parse the cleaned JSON string
       const parsedQuestions: Question[] = JSON.parse(jsonResponse).map(
-        (q: any) => ({
+        (q: object) => ({
           ...q,
           userAnswer: null,
           isCorrect: null, // Initialize with null for correctness
