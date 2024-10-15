@@ -9,13 +9,13 @@ const genAI = new GoogleGenerativeAI(
 interface Question {
   question: string;
   options: string[];
-  error: string;
+  error?: string; // Changed to optional
   correctAnswer: string;
   userAnswer: string | null;
-  isCorrect: boolean | null; // Added to track if the answer is correct
+  isCorrect: boolean | null;
 }
 
-const DocumentQuizComponent = () => {
+const DocumentQuizComponent: React.FC = () => {
   const [file, setFile] = useState<File | null>(null);
   const [documentContent, setDocumentContent] = useState<string>("");
   const [questions, setQuestions] = useState<Question[]>([]);
@@ -28,7 +28,7 @@ const DocumentQuizComponent = () => {
   const extractDocumentContent = async (file: File): Promise<string> => {
     return new Promise((resolve) => {
       const reader = new FileReader();
-      reader.onload = (e) => {
+      reader.onload = (e: ProgressEvent<FileReader>) => {
         const text = e.target?.result;
         resolve(text as string);
       };
@@ -61,16 +61,14 @@ const DocumentQuizComponent = () => {
     fn: () => Promise<any>,
     retries: number = 3,
     delay: number = 1000
-  ) => {
+  ): Promise<any> => {
     try {
       return await fn();
     } catch (error) {
-      // TODO: To something With the bloW comment code
-      //  || error.response?.status !== 429
       if (retries === 0) throw error;
       console.warn(`Retrying after ${delay}ms due to rate limiting...`);
       await new Promise((resolve) => setTimeout(resolve, delay));
-      return retryWithBackoff(fn, retries - 1, delay * 2); // Exponential backoff
+      return retryWithBackoff(fn, retries - 1, delay * 2);
     }
   };
 
@@ -85,27 +83,24 @@ const DocumentQuizComponent = () => {
           "question", "options" (an array of 4 strings), and "correctAnswer" (the correct option).
 
           Document content:
-          ${content.substring(0, 5000)} // Limiting to 5000 characters
+          ${content.substring(0, 5000)}
         `);
         console.log(result);
         return result;
       };
 
-      // Call the retry function with exponential backoff
       const result = await retryWithBackoff(generate);
 
-      // Extract only the JSON part from the response
       const response = result.response.text();
       const jsonStart = response.indexOf("[");
       const jsonEnd = response.lastIndexOf("]") + 1;
       const jsonResponse = response.substring(jsonStart, jsonEnd);
 
-      // Parse the cleaned JSON string
       const parsedQuestions: Question[] = JSON.parse(jsonResponse).map(
-        (q: object) => ({
+        (q: Omit<Question, "userAnswer" | "isCorrect">) => ({
           ...q,
           userAnswer: null,
-          isCorrect: null, // Initialize with null for correctness
+          isCorrect: null,
         })
       );
       setQuestions(parsedQuestions);
@@ -116,7 +111,6 @@ const DocumentQuizComponent = () => {
     }
   };
 
-  // Function to handle the user's answer selection
   const handleAnswerSelection = (answer: string) => {
     setQuestions((prevQuestions) =>
       prevQuestions.map((q, index) =>
@@ -124,7 +118,7 @@ const DocumentQuizComponent = () => {
           ? {
               ...q,
               userAnswer: answer,
-              isCorrect: answer === q.correctAnswer, // Check if the answer is correct
+              isCorrect: answer === q.correctAnswer,
             }
           : q
       )

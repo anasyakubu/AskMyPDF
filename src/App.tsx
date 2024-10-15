@@ -3,6 +3,7 @@ import { BrowserRouter, Routes, Route } from "react-router-dom";
 import Chat from "./pages/Chat/Chat";
 import Voice from "./pages/Voice/Voice";
 import Quiz from "./pages/Quiz/Quiz";
+import TextImage from "./pages/TextImage/TextImage";
 // import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -15,6 +16,7 @@ function App() {
             <Route path="/" element={<Chat />}></Route>
             <Route path="/Voice" element={<Voice />}></Route>
             <Route path="/Quiz" element={<Quiz />}></Route>
+            <Route path="/TextImage" element={<TextImage />}></Route>
           </Routes>
         </BrowserRouter>
       </div>
