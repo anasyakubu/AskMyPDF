@@ -1,14 +1,11 @@
 import React from "react";
+import site from "../../assets/site.png";
 
 const HeroSection: React.FC = () => {
   return (
-    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center text-center px-4">
+    <div className="bg-gray-100 min-h-screen flex flex-col items-center justify-center text-center px-4 pt-32">
       <div className="max-w-4xl mx-auto">
-        <div className="mb-8">
-          <span className="inline-block bg-white text-gray-700 rounded-full px-4 py-2 text-sm mb-4">
-            DocsAI is now open source
-          </span>
-        </div>
+        <div className="mb-8"></div>
         <h1 className="text-5xl md:text-6xl font-bold text-gray-900 mb-6">
           The AI Docs Companion you always wanted.
         </h1>
@@ -27,6 +24,7 @@ const HeroSection: React.FC = () => {
       </div>
       <div className="mt-16 w-full max-w-4xl bg-white rounded-lg shadow-lg p-6">
         {/* hello */}
+        <img src={site} alt="site image" />
       </div>
     </div>
   );
