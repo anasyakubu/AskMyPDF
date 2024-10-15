@@ -58,10 +58,10 @@ const DocumentQuizComponent: React.FC = () => {
 
   // Helper function to handle exponential backoff retries
   const retryWithBackoff = async (
-    fn: () => Promise<any>,
+    fn: () => Promise<object>,
     retries: number = 3,
     delay: number = 1000
-  ): Promise<any> => {
+  ): Promise<object> => {
     try {
       return await fn();
     } catch (error) {
