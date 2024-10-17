@@ -33,16 +33,19 @@ export default function Component() {
         setCurrentResponse("");
 
         // Reveal text effect
+        let tempResponse = "";
         for (let i = 0; i < formattedResponse.length; i++) {
           await new Promise((resolve) => setTimeout(resolve, 20)); // Adjust speed here
-          setCurrentResponse((prev) => prev + formattedResponse[i]);
+          tempResponse += formattedResponse[i];
+          setCurrentResponse(tempResponse);
         }
 
         // Update the current response directly instead of adding it again in the messages state
         setMessages((prev) => [
-          ...prev.slice(0, prev.length - 1),
-          { role: "assistant", content: formattedResponse },
+          ...prev,
+          { role: "assistant", content: tempResponse },
         ]);
+        setCurrentResponse("");
       } catch (error) {
         console.error("Error generating response:", error);
         setIsTyping(false);
@@ -92,18 +95,19 @@ export default function Component() {
       `}
       >
         <div className="h-full flex flex-col">
-          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center mb-4">
+          <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center mb-4">
             <Plus className="mr-2 h-4 w-4" />
             New Chat
           </button>
           <div className="flex-grow overflow-y-auto">
-            {[...Array(10)].map((_, i) => (
+            {[...Array(1)].map((_, i) => (
               <button
                 key={i}
                 className="w-full text-left py-2 px-3 mb-1 rounded-lg hover:bg-gray-700 transition duration-200 ease-in-out flex items-center"
               >
                 <MessageSquare className="mr-2 h-4 w-4" />
-                Conversation {i + 1}
+                {/* Conversation {i + 1} */}
+                Conversation
               </button>
             ))}
           </div>
@@ -129,15 +133,23 @@ export default function Component() {
                 className={`rounded-lg p-3 max-w-[80%] ${
                   message.role === "user"
                     ? "bg-gray-900 text-white"
-                    : "bg-purple-500 text-gray-100"
+                    : "bg-transparent text-gray-900"
                 } shadow-lg`}
               >
-                <pre className="whitespace-pre-wrap font-sans">
-                  {message.content}
+                <pre
+                  className="whitespace-pre-wrap font-sans"
+                  // dangerouslySetInnerHTML={{
+                  //   __html: he.decode(message.content),
+                  // }}
+                  dangerouslySetInnerHTML={{
+                    __html: message.content.replace(/\*/g, ""),
+                  }}
+                >
+                  {/* {message.content} */}
                 </pre>
               </div>
               {message.role === "assistant" && (
-                <div className="bg-purple-700 text-white rounded-full p-2 ml-2">
+                <div className="bg-gray-900 text-white rounded-full p-2 ml-2">
                   <MessageSquare className="h-4 w-4" />
                 </div>
               )}
@@ -158,9 +170,17 @@ export default function Component() {
               <div className="bg-purple-700 text-white rounded-full p-2 mr-2">
                 <MessageSquare className="h-4 w-4" />
               </div>
-              <div className="bg-purple-500 text-gray-100 rounded-lg p-3 max-w-[80%] shadow-lg">
-                <pre className="whitespace-pre-wrap font-sans">
-                  {currentResponse}
+              <div className="bg-transparent text-gray-900  rounded-lg p-3 max-w-[80%] shadow-sm">
+                <pre
+                  className="whitespace-pre-wrap font-sans"
+                  // dangerouslySetInnerHTML={{
+                  //   __html: he.decode(currentResponse),
+                  // }}
+                  dangerouslySetInnerHTML={{
+                    __html: currentResponse.replace(/\*/g, ""),
+                  }}
+                >
+                  {/* {currentResponse} */}
                 </pre>
               </div>
             </div>
