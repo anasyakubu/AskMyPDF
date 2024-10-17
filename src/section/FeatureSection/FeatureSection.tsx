@@ -4,7 +4,7 @@ import FeatureOne from "../../components/FeatureOne";
 const FeatureSection = () => {
   return (
     <div className="FeatureSection">
-      <div className="">
+      <div className="mt-32">
         <FeatureOne />
       </div>
     </div>
