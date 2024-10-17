@@ -228,7 +228,7 @@
 
 // export default DocumentQuizComponent;
 
-import React from "react";
+// import React from "react";
 
 const DocumentQuizComponent = () => {
   return <div>DocumentQuizComponent</div>;

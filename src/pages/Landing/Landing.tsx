@@ -1,4 +1,4 @@
-import React from "react";
+// import React from "react";
 import HeroSection from "../../section/Hero/Hero";
 import Nav from "../../ui/Nav";
 
