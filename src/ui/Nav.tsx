@@ -56,7 +56,7 @@ export default function Nav() {
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <a
               href="/Register"
-              className="p-2 px-5 text-sm bg-black rounded-sm m-2 icon"
+              className="p-2 px-5 text-sm bg-purple-600 rounded-sm m-2 icon"
               style={{ letterSpacing: "1px" }}
             >
               <span className="text-white">Apply Now</span>
@@ -69,7 +69,7 @@ export default function Nav() {
             </a>
           </div>
         </nav>
-        {/* <hr className="bg-black" /> */}
+        {/* <hr className="bg-purple-600" /> */}
         <Dialog
           as="div"
           className="lg:hidden"
@@ -108,7 +108,7 @@ export default function Nav() {
                 <div className="py-6 flex lg:flex-1 lg:justify-end">
                   <a
                     href="/Register"
-                    className="p-2 px-5 text-sm bg-black rounded-sm m-2 icon"
+                    className="p-2 px-5 text-sm bg-purple-600 rounded-sm m-2 icon"
                     style={{ letterSpacing: "1px" }}
                   >
                     <span className="text-white">Apply Now</span>
