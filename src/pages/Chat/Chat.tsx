@@ -1,168 +1,205 @@
-import React, { useState, useRef } from "react";
+import { useState } from "react";
+import { MessageSquare, Send, Plus, User, Menu, X } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 
-// Initialize the Gemini API client
+// Initialize the Gemini API
 const genAI = new GoogleGenerativeAI(
   import.meta.env.VITE_GOOGLE_GENERATIVE_AI_API_KEY
 );
+const model = genAI.getGenerativeModel({ model: "gemini-pro" });
 
-const PDFChatComponent = () => {
-  const [file, setFile] = useState<File | null>(null);
-  const [documentContent, setDocumentContent] = useState<string>("");
-  const [chat, setChat] = useState<string[]>([]);
-  const [userInput, setUserInput] = useState("");
-  const [isLoading, setIsLoading] = useState(false);
-  const fileInputRef = useRef<HTMLInputElement>(null);
+export default function Component() {
+  const [input, setInput] = useState("");
+  const [messages, setMessages] = useState([
+    { role: "assistant", content: "Hello! How can I assist you today?" },
+  ]);
+  const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+  const [isTyping, setIsTyping] = useState(false);
+  const [currentResponse, setCurrentResponse] = useState("");
 
-  const extractDocumentContent = async (file: File): Promise<string> => {
-    // This is a placeholder function. In a real implementation,
-    // you'd use a library like pdf.js for PDFs or mammoth for DOC files.
-    return new Promise((resolve) => {
-      const reader = new FileReader();
-      reader.onload = (e) => {
-        const text = e.target?.result;
-        resolve(text as string);
-      };
-      reader.readAsText(file);
-    });
-  };
+  const handleSend = async () => {
+    if (input.trim()) {
+      const userMessage = { role: "user", content: input };
+      setMessages((prev) => [...prev, userMessage]);
+      setInput("");
+      setIsTyping(true);
 
-  const handleFileUpload = async (
-    event: React.ChangeEvent<HTMLInputElement>
-  ) => {
-    const uploadedFile = event.target.files?.[0];
-    if (uploadedFile) {
-      setFile(uploadedFile);
-      setIsLoading(true);
       try {
-        const content = await extractDocumentContent(uploadedFile);
-        setDocumentContent(content);
-        setChat([
-          `File uploaded: ${uploadedFile.name}`,
-          "AI: Document processed. You can now chat about its contents.",
+        const result = await model.generateContent(input);
+        const response = result.response;
+        const formattedResponse = formatResponse(response.text());
+
+        setIsTyping(false);
+        setCurrentResponse("");
+
+        // Reveal text effect
+        for (let i = 0; i < formattedResponse.length; i++) {
+          await new Promise((resolve) => setTimeout(resolve, 20)); // Adjust speed here
+          setCurrentResponse((prev) => prev + formattedResponse[i]);
+        }
+
+        // Update the current response directly instead of adding it again in the messages state
+        setMessages((prev) => [
+          ...prev.slice(0, prev.length - 1),
+          { role: "assistant", content: formattedResponse },
         ]);
       } catch (error) {
-        console.error("Error processing document:", error);
-        setChat(["Error processing document. Please try again."]);
-      } finally {
-        setIsLoading(false);
+        console.error("Error generating response:", error);
+        setIsTyping(false);
+        setMessages((prev) => [
+          ...prev,
+          {
+            role: "assistant",
+            content: "I'm sorry, I encountered an error. Please try again.",
+          },
+        ]);
       }
     }
   };
 
-  const handleUserInput = (event: React.ChangeEvent<HTMLInputElement>) => {
-    setUserInput(event.target.value);
+  const formatResponse = (text: string) => {
+    // Simple formatting: add newlines before lists and indentation
+    return text
+      .replace(/(\d+\.\s)/g, "\n$1")
+      .replace(/(-\s)/g, "\n  $1")
+      .trim();
   };
 
-  const handleSendMessage = async () => {
-    if (!file || !userInput.trim() || !documentContent) return;
-    setIsLoading(true);
-    setChat((prevChat) => [...prevChat, `You: ${userInput}`]);
-
-    try {
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const result = await model.generateContent(`
-        Document content: ${documentContent.substring(0, 1000)}...
-    
-        Based on the above document content, please respond to the following: ${userInput}
-      `);
-      const response = result.response;
-      setChat((prevChat) => [...prevChat, `AI: ${response.text()}`]);
-    } catch (error) {
-      console.error("Error communicating with Gemini API:", error);
-      setChat((prevChat) => [
-        ...prevChat,
-        "AI: Sorry, there was an error processing your request.",
-      ]);
-    } finally {
-      setIsLoading(false);
-      setUserInput("");
-    }
-  };
-
-  const handleGenerateQuestions = async () => {
-    if (!file || !documentContent) return;
-
-    setIsLoading(true);
-    setChat((prevChat) => [...prevChat, "Generating questions..."]);
-
-    try {
-      const model = genAI.getGenerativeModel({ model: "gemini-pro" });
-      const result = await model.generateContent(`
-        Document content: ${documentContent.substring(0, 1000)}...
-        
-        Based on the above document content, generate 5 relevant questions.
-      `);
-      const response = result.response;
-      setChat((prevChat) => [
-        ...prevChat,
-        `AI Generated Questions:\n${response.text()}`,
-      ]);
-    } catch (error) {
-      console.error("Error generating questions:", error);
-      setChat((prevChat) => [
-        ...prevChat,
-        "AI: Sorry, there was an error generating questions.",
-      ]);
-    } finally {
-      setIsLoading(false);
-    }
+  const toggleMobileMenu = () => {
+    setIsMobileMenuOpen(!isMobileMenuOpen);
   };
 
   return (
-    <div className="container mx-auto p-4">
-      <h1 className="text-2xl font-bold mb-4">PDF/DOC Chat with AI</h1>
-      <input
-        type="file"
-        accept=".pdf,.doc,.docx"
-        onChange={handleFileUpload}
-        ref={fileInputRef}
-        className="hidden"
-      />
+    <div className="flex h-screen bg-gradient-to-br from-gray-100 to-purple-50 text-gray-100">
+      {/* Mobile Menu Button */}
       <button
-        onClick={() => fileInputRef.current?.click()}
-        className="bg-blue-500 text-white px-4 py-2 rounded mb-4"
-        disabled={isLoading}
+        className="md:hidden fixed top-4 left-4 z-50 bg-gray-50 p-2 rounded-full"
+        onClick={toggleMobileMenu}
       >
-        Upload PDF/DOC
+        {isMobileMenuOpen ? (
+          <X className="h-6 w-6 text-gray-900" />
+        ) : (
+          <Menu className="h-6 w-6 text-gray-900" />
+        )}
       </button>
-      {file && (
-        <div className="mb-4">
-          <p>File uploaded: {file.name}</p>
-          <button
-            onClick={handleGenerateQuestions}
-            className="bg-green-500 text-white px-4 py-2 rounded mt-2"
-            disabled={isLoading}
-          >
-            Generate Questions
+
+      {/* Sidebar / Mega Menu */}
+      <div
+        className={`
+        fixed inset-0 z-40 bg-gray-800 p-4 transition-transform duration-300 ease-in-out
+        ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
+        md:relative md:translate-x-0 md:w-64
+      `}
+      >
+        <div className="h-full flex flex-col">
+          <button className="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center mb-4">
+            <Plus className="mr-2 h-4 w-4" />
+            New Chat
           </button>
+          <div className="flex-grow overflow-y-auto">
+            {[...Array(10)].map((_, i) => (
+              <button
+                key={i}
+                className="w-full text-left py-2 px-3 mb-1 rounded-lg hover:bg-gray-700 transition duration-200 ease-in-out flex items-center"
+              >
+                <MessageSquare className="mr-2 h-4 w-4" />
+                Conversation {i + 1}
+              </button>
+            ))}
+          </div>
         </div>
-      )}
-      <div className="border p-4 h-64 overflow-y-auto mb-4">
-        {chat.map((message, index) => (
-          <p key={index} className="mb-2">
-            {message}
-          </p>
-        ))}
       </div>
-      <div className="flex">
-        <input
-          type="text"
-          value={userInput}
-          onChange={handleUserInput}
-          className="flex-grow border p-2 mr-2"
-          placeholder="Chat about the document or ask questions..."
-        />
-        <button
-          onClick={handleSendMessage}
-          className="bg-blue-500 text-white px-4 py-2 rounded"
-          disabled={isLoading || !file || !documentContent}
-        >
-          Send
-        </button>
+
+      {/* Main Chat Area */}
+      <div className="flex-1 flex flex-col">
+        <div className="flex-1 p-4 overflow-y-auto">
+          {messages.map((message, i) => (
+            <div
+              key={i}
+              className={`flex ${
+                message.role === "user" ? "justify-end" : "justify-start"
+              } mb-4`}
+            >
+              {message.role === "user" && (
+                <div className="bg-gray-900 text-white rounded-full p-2 mr-2">
+                  <User className="h-4 w-4" />
+                </div>
+              )}
+              <div
+                className={`rounded-lg p-3 max-w-[80%] ${
+                  message.role === "user"
+                    ? "bg-gray-900 text-white"
+                    : "bg-purple-500 text-gray-100"
+                } shadow-lg`}
+              >
+                <pre className="whitespace-pre-wrap font-sans">
+                  {message.content}
+                </pre>
+              </div>
+              {message.role === "assistant" && (
+                <div className="bg-purple-700 text-white rounded-full p-2 ml-2">
+                  <MessageSquare className="h-4 w-4" />
+                </div>
+              )}
+            </div>
+          ))}
+          {isTyping && (
+            <div className="flex justify-start mb-4">
+              <div className="bg-purple-700 text-white rounded-full p-2 mr-2">
+                <MessageSquare className="h-4 w-4" />
+              </div>
+              <div className="bg-purple-500 text-gray-100 rounded-lg p-3 max-w-[80%] shadow-lg">
+                <span className="animate-pulse">Typing...</span>
+              </div>
+            </div>
+          )}
+          {currentResponse && (
+            <div className="flex justify-start mb-4">
+              <div className="bg-purple-700 text-white rounded-full p-2 mr-2">
+                <MessageSquare className="h-4 w-4" />
+              </div>
+              <div className="bg-purple-500 text-gray-100 rounded-lg p-3 max-w-[80%] shadow-lg">
+                <pre className="whitespace-pre-wrap font-sans">
+                  {currentResponse}
+                </pre>
+              </div>
+            </div>
+          )}
+        </div>
+
+        {/* Sender Message Box */}
+        <div className="p-4 bg-gray-50 border-t border-gray-300">
+          <div className="flex items-start mb-2">
+            <div className="bg-gray-900 text-white rounded-full p-2 mr-2">
+              <User className="h-4 w-4" />
+            </div>
+            <div className="flex-grow bg-gray-900 rounded-lg p-3">
+              <p className="text-sm font-semibold mb-1 text-white">You</p>
+              <p className="text-gray-300">{input || "Type your message..."}</p>
+            </div>
+          </div>
+          <form
+            onSubmit={(e) => {
+              e.preventDefault();
+              handleSend();
+            }}
+            className="flex space-x-2"
+          >
+            <input
+              value={input}
+              onChange={(e) => setInput(e.target.value)}
+              placeholder="Type your message here..."
+              className="flex-1 bg-gray-100 border border-black text-gray-900 placeholder-gray-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-600"
+            />
+            <button
+              type="submit"
+              className="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
+            >
+              <Send className="h-4 w-4" />
+            </button>
+          </form>
+        </div>
       </div>
     </div>
   );
-};
-
-export default PDFChatComponent;
+}
