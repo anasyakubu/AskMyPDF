@@ -89,7 +89,7 @@ export default function Component() {
       {/* Sidebar / Mega Menu */}
       <div
         className={`
-        fixed inset-0 z-40 bg-gray-800 p-4 transition-transform duration-300 ease-in-out
+        fixed inset-0 z-40 bg-gray-900 p-4 transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         md:relative md:translate-x-0 md:w-64
       `}
@@ -103,7 +103,7 @@ export default function Component() {
             {[...Array(1)].map((_, i) => (
               <button
                 key={i}
-                className="w-full text-left py-2 px-3 mb-1 rounded-lg hover:bg-gray-700 transition duration-200 ease-in-out flex items-center"
+                className="w-full text-left py-2 px-3 bg-gray-200 text-black mb-1 rounded-lg hover:bg-gray-800 hover:text-gray-100 transition duration-200 ease-in-out flex items-center"
               >
                 <MessageSquare className="mr-2 h-4 w-4" />
                 {/* Conversation {i + 1} */}
@@ -157,10 +157,10 @@ export default function Component() {
           ))}
           {isTyping && (
             <div className="flex justify-start mb-4">
-              <div className="bg-purple-700 text-white rounded-full p-2 mr-2">
+              <div className="bg-gray-900 text-white rounded-full p-2 mr-2">
                 <MessageSquare className="h-4 w-4" />
               </div>
-              <div className="bg-purple-500 text-gray-100 rounded-lg p-3 max-w-[80%] shadow-lg">
+              <div className="bg-gray-900 text-gray-100 rounded-lg p-3 max-w-[80%] shadow-lg">
                 <span className="animate-pulse">Typing...</span>
               </div>
             </div>

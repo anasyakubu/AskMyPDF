@@ -55,11 +55,11 @@ export default function Nav() {
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <a
-              href="/Register"
+              href="/chat"
               className="p-2 px-5 text-sm bg-purple-600 rounded-sm m-2 icon"
               style={{ letterSpacing: "1px" }}
             >
-              <span className="text-white">Apply Now</span>
+              <span className="text-white">Get started</span>
             </a>
             <a
               href="/Join"
@@ -111,7 +111,7 @@ export default function Nav() {
                     className="p-2 px-5 text-sm bg-purple-600 rounded-sm m-2 icon"
                     style={{ letterSpacing: "1px" }}
                   >
-                    <span className="text-white">Apply Now</span>
+                    <span className="text-white">Get started</span>
                   </a>
                   <a
                     href="/Join"

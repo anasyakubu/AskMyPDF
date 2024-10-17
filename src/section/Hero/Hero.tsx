@@ -15,10 +15,10 @@ const HeroSection: React.FC = () => {
         </p>
         <div className="flex flex-col sm:flex-row justify-center gap-4">
           <button className="bg-purple-600 text-white px-8 py-3 rounded-md text-sm font-semibold hover:bg-purple-800 transition-colors">
-            Get started
+            <a href="/chat">Get started</a>
           </button>
           <button className="bg-white text-black px-8 py-3 rounded-md text-sm font-semibold border border-gray-300 hover:bg-gray-50 transition-colors">
-            View Pricing →
+            <a href="/">View Pricing →</a>
           </button>
         </div>
       </div>
