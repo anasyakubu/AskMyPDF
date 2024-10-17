@@ -14,11 +14,11 @@ function App() {
         {/* <Toaster position="top-center" toastOptions={{ duration: 2000 }} /> */}
         <BrowserRouter>
           <Routes>
-            <Route path="/" element={<Chat />}></Route>
+            <Route path="/Landing" element={<Landing />}></Route>
             <Route path="/Voice" element={<Voice />}></Route>
             <Route path="/Quiz" element={<Quiz />}></Route>
             <Route path="/TextImage" element={<TextImage />}></Route>
-            <Route path="/Landing" element={<Landing />}></Route>
+            <Route path="/Chat" element={<Chat />}></Route>
           </Routes>
         </BrowserRouter>
       </div>
