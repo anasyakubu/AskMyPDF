@@ -14,7 +14,7 @@ function App() {
         {/* <Toaster position="top-center" toastOptions={{ duration: 2000 }} /> */}
         <BrowserRouter>
           <Routes>
-            <Route path="/Landing" element={<Landing />}></Route>
+            <Route path="/" element={<Landing />}></Route>
             <Route path="/Voice" element={<Voice />}></Route>
             <Route path="/Quiz" element={<Quiz />}></Route>
             <Route path="/TextImage" element={<TextImage />}></Route>
