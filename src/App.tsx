@@ -1,6 +1,6 @@
 import "./App.css";
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-import Chatbot from "./pages/Chatbot/Chatbot";
+import PdfChat from "./pages/PdfChat/PdfChat";
 import Chat from "./pages/Chat/Chat";
 import Voice from "./pages/Voice/Voice";
 import Quiz from "./pages/Quiz/Quiz";
@@ -19,7 +19,7 @@ function App() {
             <Route path="/Voice" element={<Voice />}></Route>
             <Route path="/Quiz" element={<Quiz />}></Route>
             <Route path="/TextImage" element={<TextImage />}></Route>
-            <Route path="/Chatbot" element={<Chatbot />}></Route>
+            <Route path="/PdfChat" element={<PdfChat />}></Route>
             <Route path="/Chat" element={<Chat />}></Route>
           </Routes>
         </BrowserRouter>
