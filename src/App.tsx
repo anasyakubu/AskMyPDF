@@ -17,10 +17,10 @@ function App() {
           <Routes>
             <Route path="/" element={<Landing />}></Route>
             <Route path="/Voice" element={<Voice />}></Route>
-            <Route path="/Quiz" element={<Quiz />}></Route>
+            <Route path="/quiz" element={<Quiz />}></Route>
             <Route path="/TextImage" element={<TextImage />}></Route>
-            <Route path="/PdfChat" element={<PdfChat />}></Route>
-            <Route path="/Chat" element={<Chat />}></Route>
+            <Route path="/pdfChat" element={<PdfChat />}></Route>
+            <Route path="/chat" element={<Chat />}></Route>
           </Routes>
         </BrowserRouter>
       </div>

@@ -8,10 +8,10 @@ import Logo from "../../src/assets/react.svg";
 
 const navigation = [
   { name: "Home", href: "/" },
-  // { name: "About", href: "/#about" },
-  { name: "Internships", href: "/internship" },
-  { name: "Requirements", href: "/requirements" },
-  { name: "Resources", href: "/resources" },
+  { name: "Quiz", href: "/quiz" },
+  { name: "Chat", href: "/chat" },
+  { name: "Chat PDF", href: "/pdfChat" },
+  { name: "Pricing", href: "/pricing" },
   { name: "Contact", href: "/contact" },
 ];
 
