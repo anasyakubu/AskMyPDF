@@ -210,6 +210,7 @@ export default function DocumentQuizComponent() {
       {/* Main Quiz Area */}
       <div className="flex-1 flex flex-col">
         <div className="flex-1 p-4 overflow-y-auto" ref={chatContainerRef}>
+          <div className="hidden">{documentContent}</div>
           <h2 className="text-2xl font-bold mb-4">Document Quiz Generator</h2>
           {questions.length > 0 && (
             <div className="mt-4">
