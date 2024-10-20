@@ -83,35 +83,50 @@ export default function DocumentQuizComponent() {
           Based on the following document content, generate 10 multiple-choice questions with 4 options each.
           Format the output as a JSON array of objects, where each object has the properties:
           "question", "options" (an array of 4 strings), and "correctAnswer" (the correct option).
-
+      
           Document content:
           ${content.substring(0, 5000)}
         `);
         console.log(result);
         return result;
       };
-
-      const result = await retryWithBackoff(generate);
-
-      const response = result.response.text();
-      const jsonStart = response.indexOf("[");
-      const jsonEnd = response.lastIndexOf("]") + 1;
-      const jsonResponse = response.substring(jsonStart, jsonEnd);
-
-      const parsedQuestions: Question[] = JSON.parse(jsonResponse).map(
-        (q: Omit<Question, "userAnswer" | "isCorrect">) => ({
-          ...q,
-          userAnswer: null,
-          isCorrect: null,
-        })
-      );
-      setQuestions(parsedQuestions);
-      setCurrentQuestionIndex(0);
-    } catch (error) {
-      console.error("Error generating questions:", error);
-      alert("Error generating questions. Please try again.");
-    }
-  };
+      
+      try {
+        const result = await retryWithBackoff(generate);
+      
+        // Check if result has the expected structure
+        if (!result || typeof result !== 'object' || !('text' in result)) {
+          throw new Error('Unexpected result structure from model');
+        }
+      
+        const response = typeof result.text === 'function' ? result.text() : result.text;
+      
+        if (typeof response !== 'string') {
+          throw new Error('Unexpected response type from model');
+        }
+      
+        const jsonStart = response.indexOf("[");
+        const jsonEnd = response.lastIndexOf("]") + 1;
+        
+        if (jsonStart === -1 || jsonEnd === 0) {
+          throw new Error('No valid JSON found in the response');
+        }
+      
+        const jsonResponse = response.substring(jsonStart, jsonEnd);
+      
+        const parsedQuestions: Question[] = JSON.parse(jsonResponse).map(
+          (q: Omit<Question, "userAnswer" | "isCorrect">) => ({
+            ...q,
+            userAnswer: null,
+            isCorrect: null,
+          })
+        );
+        setQuestions(parsedQuestions);
+        setCurrentQuestionIndex(0);
+      } catch (error) {
+        console.error("Error generating questions:", error);
+        alert("Error generating questions. Please try again.");
+      }
 
   const handleAnswerSelection = (answer: string) => {
     setQuestions((prevQuestions) =>
