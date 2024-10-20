@@ -10,7 +10,6 @@ const genAI = new GoogleGenerativeAI(
 interface Question {
   question: string;
   options: string[];
-  error?: string;
   correctAnswer: string;
   userAnswer: string | null;
   isCorrect: boolean | null;
@@ -60,10 +59,10 @@ export default function DocumentQuizComponent() {
   };
 
   const retryWithBackoff = async (
-    fn: () => Promise<object>,
+    fn: () => Promise<any>,
     retries: number = 3,
     delay: number = 1000
-  ): Promise<object> => {
+  ): Promise<any> => {
     try {
       return await fn();
     } catch (error) {
@@ -87,46 +86,44 @@ export default function DocumentQuizComponent() {
           Document content:
           ${content.substring(0, 5000)}
         `);
-        console.log(result);
         return result;
       };
-      
-      try {
-        const result = await retryWithBackoff(generate);
-      
-        // Check if result has the expected structure
-        if (!result || typeof result !== 'object' || !('text' in result)) {
-          throw new Error('Unexpected result structure from model');
-        }
-      
-        const response = typeof result.text === 'function' ? result.text() : result.text;
-      
-        if (typeof response !== 'string') {
-          throw new Error('Unexpected response type from model');
-        }
-      
-        const jsonStart = response.indexOf("[");
-        const jsonEnd = response.lastIndexOf("]") + 1;
-        
-        if (jsonStart === -1 || jsonEnd === 0) {
-          throw new Error('No valid JSON found in the response');
-        }
-      
-        const jsonResponse = response.substring(jsonStart, jsonEnd);
-      
-        const parsedQuestions: Question[] = JSON.parse(jsonResponse).map(
-          (q: Omit<Question, "userAnswer" | "isCorrect">) => ({
-            ...q,
-            userAnswer: null,
-            isCorrect: null,
-          })
-        );
-        setQuestions(parsedQuestions);
-        setCurrentQuestionIndex(0);
-      } catch (error) {
-        console.error("Error generating questions:", error);
-        alert("Error generating questions. Please try again.");
+
+      const result = await retryWithBackoff(generate);
+
+      if (!result.response) {
+        throw new Error("Unexpected result structure from model");
       }
+
+      const response = result.response.text();
+
+      if (typeof response !== "string") {
+        throw new Error("Unexpected response type from model");
+      }
+
+      const jsonStart = response.indexOf("[");
+      const jsonEnd = response.lastIndexOf("]") + 1;
+
+      if (jsonStart === -1 || jsonEnd === 0) {
+        throw new Error("No valid JSON found in the response");
+      }
+
+      const jsonResponse = response.substring(jsonStart, jsonEnd);
+
+      const parsedQuestions: Question[] = JSON.parse(jsonResponse).map(
+        (q: Omit<Question, "userAnswer" | "isCorrect">) => ({
+          ...q,
+          userAnswer: null,
+          isCorrect: null,
+        })
+      );
+      setQuestions(parsedQuestions);
+      setCurrentQuestionIndex(0);
+    } catch (error) {
+      console.error("Error generating questions:", error);
+      alert("Error generating questions. Please try again.");
+    }
+  };
 
   const handleAnswerSelection = (answer: string) => {
     setQuestions((prevQuestions) =>
@@ -296,11 +293,3 @@ export default function DocumentQuizComponent() {
     </div>
   );
 }
-
-// import React from "react";
-
-// const DocumentQuizComponent = () => {
-//   return <div>DocumentQuizComponent</div>;
-// };
-
-// export default DocumentQuizComponent;
