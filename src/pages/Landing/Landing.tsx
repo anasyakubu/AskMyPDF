@@ -1,5 +1,6 @@
 // import React from "react";
 import FeatureSection from "../../section/FeatureSection/FeatureSection";
+import Footer from "../../section/Footer/Footer";
 import HeroSection from "../../section/Hero/Hero";
 import Nav from "../../ui/Nav";
 
@@ -9,6 +10,7 @@ const Landing = () => {
       <Nav />
       <HeroSection />
       <FeatureSection />
+      <Footer />
     </div>
   );
 };
