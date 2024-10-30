@@ -1,14 +1,14 @@
 // import React from 'react'
 import { Helmet } from "react-helmet";
-import Nav from "../../Components/Nav";
-import Footer from "../../Sections/Footer/Footer";
-import LoginForm from "../../Sections/LoginForm/LoginForm";
+import Nav from "../../ui/Nav";
+import Footer from "../../section/Footer/Footer";
+import LoginForm from "../../section/LoginForm/LoginForm";
 
 const Login = () => {
   return (
     <div className="Login bg-gray-50">
       <Helmet>
-        <title>Login ~ Daily Invoice</title>
+        <title>Login ~ AskMyPDF</title>
       </Helmet>
       <Nav />
       <LoginForm />
