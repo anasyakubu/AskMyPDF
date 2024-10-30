@@ -136,7 +136,7 @@ const LoginForm = () => {
                     </div>
                     <div className="mt-3">
                       <button
-                        className="p-3 w-full bg-green-600 text-white text-md rounded-md"
+                        className="p-3 w-full bg-purple-600 text-white text-md rounded-md"
                         style={{ letterSpacing: "1px" }}
                       >
                         {loading ? "Processing..." : "Login"}
