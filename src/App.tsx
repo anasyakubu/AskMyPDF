@@ -6,6 +6,8 @@ import Voice from "./pages/Voice/Voice";
 import Quiz from "./pages/Quiz/Quiz";
 import TextImage from "./pages/TextImage/TextImage";
 import Landing from "./pages/Landing/Landing";
+import Login from "./pages/Login/Login";
+import Register from "./pages/Register/Register";
 // import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -21,6 +23,9 @@ function App() {
             <Route path="/TextImage" element={<TextImage />}></Route>
             <Route path="/pdfChat" element={<PdfChat />}></Route>
             <Route path="/chat" element={<Chat />}></Route>
+            {/* auth routes */}
+            <Route path="/auth" element={<Login />}></Route>
+            <Route path="/register" element={<Register />}></Route>
           </Routes>
         </BrowserRouter>
       </div>
