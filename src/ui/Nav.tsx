@@ -55,7 +55,7 @@ export default function Nav() {
           </div>
           <div className="hidden lg:flex lg:flex-1 lg:justify-end">
             <a
-              href="/chat"
+              href="/auth"
               className="p-2 px-5 text-sm bg-purple-600 rounded-sm m-2 icon"
               style={{ letterSpacing: "1px" }}
             >
