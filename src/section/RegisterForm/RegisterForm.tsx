@@ -152,7 +152,7 @@ const RegisterForm = () => {
                       <p className="text-sm text-center mt-1">
                         Already have an account?{" "}
                         <span className="underline text-blue-500">
-                          <Link to="/Login">Login</Link>
+                          <Link to="/auth">Login</Link>
                         </span>
                       </p>
                     </div>

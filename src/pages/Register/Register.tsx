@@ -11,6 +11,7 @@ const Register = () => {
         <title>Register ~ AskMyPDF</title>
       </Helmet> */}
       <Nav />
+      <div className="pt-16"></div>
       <RegisterForm />
       <Footer />
     </div>

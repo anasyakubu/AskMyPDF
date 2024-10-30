@@ -81,95 +81,115 @@ const LoginForm = () => {
       <div className="p-32 py-5">
         <div className="p-10 space-y-2 lg:grid lg:grid-cols-2 lg:gap-x-6 lg:space-y-0">
           {/* Form */}
-          <div>
-            <h2 className="text-4xl font-bold">Log in</h2>
-            <p className="text-sm mt-4">
-              By creating a Daily Invoice account, you agree to our <br />
-              <span className="underline text-blue-500">
-                Terms of Service
-              </span>{" "}
-              and{" "}
-              <span className="underline text-blue-500">Privacy Policy.</span>
-            </p>
-            {/* FORM */}
-            <div className="mt-8">
-              <form onSubmit={handleLogin}>
-                <div>
-                  <label htmlFor="email" className="text-sm">
-                    Email Address <span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="email"
-                    className={`w-full mt-2 p-3 border ${borderColor} outline-none text-sm rounded-md`}
-                    placeholder="Eg. example@gmail.com"
-                    value={data.email}
-                    onChange={(e) =>
-                      setData({ ...data, email: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="mt-3">
-                  <label htmlFor="password" className="text-sm">
-                    Password <span className="text-red-600">*</span>
-                  </label>
-                  <input
-                    type="password"
-                    className={`w-full mt-2 p-3 border ${borderColor} outline-none text-sm rounded-md`}
-                    placeholder="Eg. ******"
-                    value={data.password}
-                    onChange={(e) =>
-                      setData({ ...data, password: e.target.value })
-                    }
-                  />
-                </div>
-                <div className="mt-3">
-                  <p className="text-sm">
-                    <Link
-                      to={`/ForgetPassword`}
-                      className="text-blue-500 underline"
-                    >
-                      Forget Password
-                    </Link>
-                  </p>
-                </div>
-                <div className="mt-3">
-                  <button
-                    type="submit"
-                    className="p-3 w-full bg-green-600 text-white text-md rounded-md"
-                    style={{ letterSpacing: "1px" }}
-                  >
-                    {loading ? "Processing..." : "Login"}
-                  </button>
-                </div>
-                <div className="mt-2">
-                  <p className="text-sm text-center">
-                    Don`t have an account?{" "}
-                    <span className="underline text-blue-500">
-                      <Link to="/Register">Register</Link>
-                    </span>
-                  </p>
-                </div>
-              </form>
+          <div className="">
+            <div className="">
+              <h2 className="text-4xl font-bold">Log in</h2>
+              <p className="text-sm mt-4 ">
+                By creating a Daily Invoice account, you agree to our <br />{" "}
+                <span className="underline text-blue-500">
+                  Terms of Service
+                </span>{" "}
+                and{" "}
+                <span className="underline text-blue-500">Privacy Policy.</span>
+              </p>
+              {/* FORM */}
+              <div className="mt-8">
+                <form onSubmit={handleLogin}>
+                  <div className="">
+                    <div className="">
+                      <label htmlFor="" className="text-sm">
+                        Email Address <span className="text-red-600">*</span>
+                      </label>
+                      <input
+                        type="email"
+                        className={`w-full mt-2 p-3 border ${borderColor} outline-none text-sm rounded-md`}
+                        placeholder="Eg. example@gmail.com"
+                        value={data.email}
+                        onChange={(e) =>
+                          setData({ ...data, email: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="mt-3">
+                      <label htmlFor="" className="text-sm">
+                        Password <span className="text-red-600">*</span>
+                      </label>
+                      <input
+                        type="password"
+                        className={`w-full mt-2 p-3 border ${borderColor} outline-none text-sm rounded-md`}
+                        placeholder="Eg. ******"
+                        value={data.password}
+                        onChange={(e) =>
+                          setData({ ...data, password: e.target.value })
+                        }
+                      />
+                    </div>
+                    <div className="mt-3">
+                      <p className="text-sm ">
+                        <Link
+                          to={`/ForgetPassword`}
+                          className="text-blue-500 underline"
+                        >
+                          Forget Password
+                        </Link>
+                      </p>
+                    </div>
+                    <div className="mt-3">
+                      <button
+                        className="p-3 w-full bg-green-600 text-white text-md rounded-md"
+                        style={{ letterSpacing: "1px" }}
+                      >
+                        {loading ? "Processing..." : "Login"}
+                      </button>
+                    </div>
+                    <div className="mt-2">
+                      <p className="text-sm text-center">
+                        Don`t have an account?{" "}
+                        <span className="underline text-blue-500">
+                          <Link to="/register">Register</Link>
+                        </span>
+                      </p>
+                    </div>
+                  </div>
+
+                  {/* <div className="mt-5">
+                  <h6 className="text-center">OR</h6>
+                </div> */}
+                </form>
+              </div>
             </div>
           </div>
           {/* Image */}
           <div className="flex justify-center text-center">
-            <img
-              src={Image}
-              alt="Login illustration"
-              className="w-96 regImage"
-            />
-            <div className="my-5">
-              <h6 className="text-center">OR</h6>
+            <div className="">
+              <div className="">
+                <img src={Image} alt="" className="w-96 regImage" />
+              </div>
+              {/*  */}
+              <div className="flex justify-center text-center">
+                <div className="">
+                  <div className="my-5">
+                    <h6 className="text-center">OR</h6>
+                  </div>
+                  <div className="">
+                    <button className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md">
+                      <span className="py-1">
+                        <FcGoogle />
+                      </span>
+                      <span>Use Google account</span>
+                    </button>
+                  </div>
+                  <div className="mt-3">
+                    <button className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md">
+                      <span className="py-1">
+                        <FaGithub />
+                      </span>
+                      <span>Use Github account</span>
+                    </button>
+                  </div>
+                </div>
+              </div>
             </div>
-            <button className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md">
-              <FcGoogle className="py-1" />
-              <span>Use Google account</span>
-            </button>
-            <button className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md mt-3">
-              <FaGithub className="py-1" />
-              <span>Use Github account</span>
-            </button>
           </div>
         </div>
       </div>
