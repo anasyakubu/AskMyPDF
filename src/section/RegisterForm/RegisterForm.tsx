@@ -1,6 +1,6 @@
 import { useState, FormEvent } from "react";
 import "./RegisterForm.scss";
-import Image from "../../assets/Secure login-bro.png";
+import Image from "../../assets/Status update-cuate.svg";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";

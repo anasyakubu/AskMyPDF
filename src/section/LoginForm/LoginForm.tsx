@@ -1,11 +1,17 @@
-import { useState, FormEvent } from "react";
+import { useState, FormEvent, useEffect } from "react";
 import "./LoginForm.scss";
-import Image from "../../assets/Mobile login-bro.png";
+import Image from "../../assets/Mobile login-bro.svg";
 import { FcGoogle } from "react-icons/fc";
 import { FaGithub } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
+
+declare global {
+  interface Window {
+    gapi: any;
+  }
+}
 
 interface LoginData {
   email: string;
@@ -75,6 +81,53 @@ const LoginForm = () => {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    const initializeGoogleAuth = () => {
+      if (window.gapi) {
+        window.gapi.load("auth2", () => {
+          const auth2 = window.gapi.auth2.init({
+            client_id: "YOUR_GOOGLE_CLIENT_ID",
+          });
+
+          auth2.attachClickHandler(
+            document.getElementById("googleSignInButton") as HTMLElement,
+            {},
+            (googleUser: any) => {
+              const token = googleUser.getAuthResponse().id_token;
+
+              fetch("http://YOUR_BACKEND_URL/auth/google", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify({ id_token: token }),
+              })
+                .then((response) => response.json())
+                .then((data) => {
+                  if (data.status === 200) {
+                    console.log("Login Successful:", data);
+                    localStorage.setItem("token", data.token);
+                  }
+                })
+                .catch((error) => console.error("Error:", error));
+            },
+            (error: any) => console.log("Error signing in", error)
+          );
+        });
+      } else {
+        console.error("Google API library is not loaded.");
+      }
+    };
+
+    // Delay the initialization to wait for the Google API script to load
+    const scriptLoadInterval = setInterval(() => {
+      if (window.gapi) {
+        clearInterval(scriptLoadInterval);
+        initializeGoogleAuth();
+      }
+    }, 100);
+
+    return () => clearInterval(scriptLoadInterval); // Clean up the interval on component unmount
+  }, []);
 
   return (
     <div className="LoginForm">
@@ -172,7 +225,10 @@ const LoginForm = () => {
                     <h6 className="text-center">OR</h6>
                   </div>
                   <div className="">
-                    <button className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md">
+                    <button
+                      id="googleSignInButton"
+                      className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md"
+                    >
                       <span className="py-1">
                         <FcGoogle />
                       </span>
