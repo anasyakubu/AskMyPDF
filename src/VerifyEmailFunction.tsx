@@ -3,10 +3,10 @@ import axios from "axios";
 import { useNavigate } from "react-router-dom";
 import Logo from "../src/assets/AskMyPDF-Logo.png";
 
-const VerifyEmail = () => {
+const VerifyEmail: React.FC = () => {
   const navigate = useNavigate();
-  const [isLoading, setIsLoading] = useState < boolean > true;
-  const [verified, setVerified] = useState < boolean > false;
+  const [isLoading, setIsLoading] = useState<boolean>(true);
+  const [verified, setVerified] = useState<boolean>(false);
 
   useEffect(() => {
     const fetchData = async () => {
