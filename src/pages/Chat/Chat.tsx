@@ -1,6 +1,7 @@
 import { useState } from "react";
 import { MessageSquare, Send, Plus, User, Menu, X } from "lucide-react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import Redirect from "../../Redirect";
 
 // Initialize the Gemini API
 const genAI = new GoogleGenerativeAI(
@@ -73,153 +74,158 @@ export default function Component() {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-100 to-purple-50 text-gray-100">
-      {/* Mobile Menu Button */}
-      <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-gray-50 p-2 rounded-full"
-        onClick={toggleMobileMenu}
-      >
-        {isMobileMenuOpen ? (
-          <X className="h-6 w-6 text-gray-900" />
-        ) : (
-          <Menu className="h-6 w-6 text-gray-900" />
-        )}
-      </button>
+    <>
+      <Redirect />
+      <div className="flex h-screen bg-gradient-to-br from-gray-100 to-purple-50 text-gray-100">
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden fixed top-4 left-4 z-50 bg-gray-50 p-2 rounded-full"
+          onClick={toggleMobileMenu}
+        >
+          {isMobileMenuOpen ? (
+            <X className="h-6 w-6 text-gray-900" />
+          ) : (
+            <Menu className="h-6 w-6 text-gray-900" />
+          )}
+        </button>
 
-      {/* Sidebar / Mega Menu */}
-      <div
-        className={`
+        {/* Sidebar / Mega Menu */}
+        <div
+          className={`
         fixed inset-0 z-40 bg-gray-900 p-4 transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         md:relative md:translate-x-0 md:w-64
       `}
-      >
-        <div className="h-full flex flex-col">
-          <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center mb-4">
-            <Plus className="mr-2 h-4 w-4" />
-            New Chat
-          </button>
-          <div className="flex-grow overflow-y-auto">
-            {[...Array(1)].map((_, i) => (
-              <button
-                key={i}
-                className="w-full text-left py-2 px-3 bg-gray-200 text-black mb-1 rounded-lg hover:bg-gray-800 hover:text-gray-100 transition duration-200 ease-in-out flex items-center"
-              >
-                <MessageSquare className="mr-2 h-4 w-4" />
-                {/* Conversation {i + 1} */}
-                Conversation
-              </button>
-            ))}
+        >
+          <div className="h-full flex flex-col">
+            <button className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center mb-4">
+              <Plus className="mr-2 h-4 w-4" />
+              New Chat
+            </button>
+            <div className="flex-grow overflow-y-auto">
+              {[...Array(1)].map((_, i) => (
+                <button
+                  key={i}
+                  className="w-full text-left py-2 px-3 bg-gray-200 text-black mb-1 rounded-lg hover:bg-gray-800 hover:text-gray-100 transition duration-200 ease-in-out flex items-center"
+                >
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  {/* Conversation {i + 1} */}
+                  Conversation
+                </button>
+              ))}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 p-4 overflow-y-auto">
-          {messages.map((message, i) => (
-            <div
-              key={i}
-              className={`flex ${
-                message.role === "user" ? "justify-end" : "justify-start"
-              } mb-4`}
-            >
-              {message.role === "user" && (
-                <div className="bg-gray-900 text-white rounded-full p-2 mr-2">
-                  <User className="h-4 w-4" />
-                </div>
-              )}
+        {/* Main Chat Area */}
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 p-4 overflow-y-auto">
+            {messages.map((message, i) => (
               <div
-                className={`rounded-lg p-3 max-w-[80%] ${
-                  message.role === "user"
-                    ? "bg-gray-900 text-white"
-                    : "bg-transparent text-gray-900"
-                } shadow-lg`}
+                key={i}
+                className={`flex ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                } mb-4`}
               >
-                <pre
-                  className="whitespace-pre-wrap font-sans"
-                  // dangerouslySetInnerHTML={{
-                  //   __html: he.decode(message.content),
-                  // }}
-                  dangerouslySetInnerHTML={{
-                    __html: message.content.replace(/\*/g, ""),
-                  }}
+                {message.role === "user" && (
+                  <div className="bg-gray-900 text-white rounded-full p-2 mr-2">
+                    <User className="h-4 w-4" />
+                  </div>
+                )}
+                <div
+                  className={`rounded-lg p-3 max-w-[80%] ${
+                    message.role === "user"
+                      ? "bg-gray-900 text-white"
+                      : "bg-transparent text-gray-900"
+                  } shadow-lg`}
                 >
-                  {/* {message.content} */}
-                </pre>
+                  <pre
+                    className="whitespace-pre-wrap font-sans"
+                    // dangerouslySetInnerHTML={{
+                    //   __html: he.decode(message.content),
+                    // }}
+                    dangerouslySetInnerHTML={{
+                      __html: message.content.replace(/\*/g, ""),
+                    }}
+                  >
+                    {/* {message.content} */}
+                  </pre>
+                </div>
+                {message.role === "assistant" && (
+                  <div className="bg-gray-900 text-white rounded-full p-2 ml-2">
+                    <MessageSquare className="h-4 w-4" />
+                  </div>
+                )}
               </div>
-              {message.role === "assistant" && (
-                <div className="bg-gray-900 text-white rounded-full p-2 ml-2">
+            ))}
+            {isTyping && (
+              <div className="flex justify-start mb-4">
+                <div className="bg-gray-900 text-white rounded-full p-2 mr-2">
                   <MessageSquare className="h-4 w-4" />
                 </div>
-              )}
-            </div>
-          ))}
-          {isTyping && (
-            <div className="flex justify-start mb-4">
-              <div className="bg-gray-900 text-white rounded-full p-2 mr-2">
-                <MessageSquare className="h-4 w-4" />
+                <div className="bg-gray-900 text-gray-100 rounded-lg p-3 max-w-[80%] shadow-lg">
+                  <span className="animate-pulse">Typing...</span>
+                </div>
               </div>
-              <div className="bg-gray-900 text-gray-100 rounded-lg p-3 max-w-[80%] shadow-lg">
-                <span className="animate-pulse">Typing...</span>
+            )}
+            {currentResponse && (
+              <div className="flex justify-start mb-4">
+                <div className="bg-purple-700 text-white rounded-full p-2 mr-2">
+                  <MessageSquare className="h-4 w-4" />
+                </div>
+                <div className="bg-transparent text-gray-900  rounded-lg p-3 max-w-[80%] shadow-sm">
+                  <pre
+                    className="whitespace-pre-wrap font-sans"
+                    // dangerouslySetInnerHTML={{
+                    //   __html: he.decode(currentResponse),
+                    // }}
+                    dangerouslySetInnerHTML={{
+                      __html: currentResponse.replace(/\*/g, ""),
+                    }}
+                  >
+                    {/* {currentResponse} */}
+                  </pre>
+                </div>
               </div>
-            </div>
-          )}
-          {currentResponse && (
-            <div className="flex justify-start mb-4">
-              <div className="bg-purple-700 text-white rounded-full p-2 mr-2">
-                <MessageSquare className="h-4 w-4" />
-              </div>
-              <div className="bg-transparent text-gray-900  rounded-lg p-3 max-w-[80%] shadow-sm">
-                <pre
-                  className="whitespace-pre-wrap font-sans"
-                  // dangerouslySetInnerHTML={{
-                  //   __html: he.decode(currentResponse),
-                  // }}
-                  dangerouslySetInnerHTML={{
-                    __html: currentResponse.replace(/\*/g, ""),
-                  }}
-                >
-                  {/* {currentResponse} */}
-                </pre>
-              </div>
-            </div>
-          )}
-        </div>
-
-        {/* Sender Message Box */}
-        <div className="p-4 bg-gray-50 border-t border-gray-300">
-          <div className="flex items-start mb-2">
-            <div className="bg-gray-900 text-white rounded-full p-2 mr-2">
-              <User className="h-4 w-4" />
-            </div>
-            <div className="flex-grow bg-gray-900 rounded-lg p-3">
-              <p className="text-sm font-semibold mb-1 text-white">You</p>
-              <p className="text-gray-300">{input || "Type your message..."}</p>
-            </div>
+            )}
           </div>
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
-            className="flex space-x-2"
-          >
-            <input
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Type your message here..."
-              className="flex-1 bg-gray-100 border border-black text-gray-900 placeholder-gray-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-600"
-            />
-            <button
-              type="submit"
-              className="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
+
+          {/* Sender Message Box */}
+          <div className="p-4 bg-gray-50 border-t border-gray-300">
+            <div className="flex items-start mb-2">
+              <div className="bg-gray-900 text-white rounded-full p-2 mr-2">
+                <User className="h-4 w-4" />
+              </div>
+              <div className="flex-grow bg-gray-900 rounded-lg p-3">
+                <p className="text-sm font-semibold mb-1 text-white">You</p>
+                <p className="text-gray-300">
+                  {input || "Type your message..."}
+                </p>
+              </div>
+            </div>
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSend();
+              }}
+              className="flex space-x-2"
             >
-              <Send className="h-4 w-4" />
-            </button>
-          </form>
+              <input
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Type your message here..."
+                className="flex-1 bg-gray-100 border border-black text-gray-900 placeholder-gray-500 rounded-lg py-2 px-4 focus:outline-none focus:ring-2 focus:ring-blue-600"
+              />
+              <button
+                type="submit"
+                className="bg-gray-900 hover:bg-gray-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105"
+              >
+                <Send className="h-4 w-4" />
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

@@ -13,7 +13,7 @@ const Redirect = () => {
       try {
         const token = localStorage.getItem("token");
         if (!token) {
-          navigate("/Login");
+          navigate("/auth");
           throw new Error("Token not found");
         }
 
@@ -43,7 +43,7 @@ const Redirect = () => {
 
   useEffect(() => {
     if (!isLoading && !isAuthenticated) {
-      navigate("/Login");
+      navigate("/auth");
     }
   }, [isLoading, isAuthenticated, navigate]);
 

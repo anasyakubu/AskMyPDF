@@ -7,15 +7,15 @@ import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
 
-declare global {
-  interface Window {
-    gapi: any;
-  }
-}
-
 interface LoginData {
   email: string;
   password: string;
+}
+
+declare global {
+  interface Window {
+    google: any;
+  }
 }
 
 const LoginForm = () => {
@@ -27,7 +27,105 @@ const LoginForm = () => {
   });
   const [borderColor, setBorderColor] = useState("border-black");
 
-  // handle Login
+  const handleGoogleSignIn = async (response: any) => {
+    try {
+      // First decode the credential to get user information
+      const decodedToken = JSON.parse(atob(response.credential.split(".")[1]));
+
+      // Prepare the data in the format your backend expects
+      const googleUserData = {
+        email: decodedToken.email,
+        name: decodedToken.name,
+        picture: decodedToken.picture,
+        google_id: decodedToken.sub,
+        id_token: response.credential, // Include the original token if needed
+      };
+
+      // Make request to your login endpoint
+      const result = await axios.post(
+        "https://api-ask-my-pdf.vercel.app/auth/login",
+        {
+          ...googleUserData,
+          loginType: "google", // Add this to differentiate from regular login
+        }
+      );
+
+      if (result.data) {
+        const { token, userID, name, email, username, userImage } = result.data;
+
+        // Store user data in localStorage
+        localStorage.setItem("token", token);
+        localStorage.setItem("userID", userID);
+        localStorage.setItem("name", name);
+        localStorage.setItem("userEmail", email);
+        localStorage.setItem("username", username);
+        localStorage.setItem("userImage", userImage || decodedToken.picture);
+
+        toast.success("Successfully signed in with Google!");
+        navigate("/Dashboard");
+      }
+    } catch (error: any) {
+      console.error("Error signing in with Google:", error);
+
+      // More specific error handling
+      if (error.response?.status === 404) {
+        toast.error("Authentication service is currently unavailable");
+      } else if (error.response?.data?.message) {
+        toast.error(error.response.data.message);
+      } else {
+        toast.error("Failed to sign in with Google. Please try again later.");
+      }
+    }
+  };
+
+  useEffect(() => {
+    const initializeGoogleSignIn = () => {
+      if (window.google?.accounts) {
+        window.google.accounts.id.initialize({
+          client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
+          callback: handleGoogleSignIn,
+          auto_select: false,
+          cancel_on_tap_outside: true,
+        });
+
+        window.google.accounts.id.renderButton(
+          document.getElementById("googleSignInButton"),
+          {
+            theme: "outline",
+            size: "large",
+            type: "standard",
+            shape: "rectangular",
+            text: "continue_with",
+            width:
+              document.getElementById("googleSignInButton")?.offsetWidth || 350,
+          }
+        );
+
+        // Also display the One Tap dialog
+        window.google.accounts.id.prompt();
+      }
+    };
+
+    // Load the Google Identity Services script
+    const script = document.createElement("script");
+    script.src = "https://accounts.google.com/gsi/client";
+    script.onload = initializeGoogleSignIn;
+    script.async = true;
+    script.defer = true;
+    document.body.appendChild(script);
+
+    return () => {
+      // Cleanup
+      const scriptElement = document.querySelector(
+        'script[src="https://accounts.google.com/gsi/client"]'
+      );
+      if (scriptElement) {
+        document.body.removeChild(scriptElement);
+      }
+    };
+  }, []);
+
+  // handle Regular Login
   const handleLogin = async (e: FormEvent) => {
     e.preventDefault();
     setLoading(true);
@@ -36,14 +134,20 @@ const LoginForm = () => {
     if (email === "" || password === "") {
       toast.error("Please enter all input required");
       setBorderColor("border-red-500");
-    } else {
-      setBorderColor("border-green-500");
+      setLoading(false);
+      return;
     }
+
+    setBorderColor("border-green-500");
 
     try {
       const response = await axios.post(
         "https://api-ask-my-pdf.vercel.app/auth/login",
-        { email, password }
+        {
+          email,
+          password,
+          loginType: "regular", // Add this to differentiate from Google login
+        }
       );
 
       const {
@@ -76,58 +180,11 @@ const LoginForm = () => {
       } else {
         toast.error("Error in setting up the request.");
       }
-      console.log(error);
+      console.error(error);
     } finally {
       setLoading(false);
     }
   };
-
-  useEffect(() => {
-    const initializeGoogleAuth = () => {
-      if (window.gapi) {
-        window.gapi.load("auth2", () => {
-          const auth2 = window.gapi.auth2.init({
-            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
-          });
-
-          auth2.attachClickHandler(
-            document.getElementById("googleSignInButton") as HTMLElement,
-            {},
-            (googleUser: any) => {
-              const token = googleUser.getAuthResponse().id_token;
-
-              fetch("https://api-ask-my-pdf.vercel.app/auth/google", {
-                method: "POST",
-                headers: { "Content-Type": "application/json" },
-                body: JSON.stringify({ id_token: token }),
-              })
-                .then((response) => response.json())
-                .then((data) => {
-                  if (data.status === 200) {
-                    console.log("Login Successful:", data);
-                    localStorage.setItem("token", data.token);
-                  }
-                })
-                .catch((error) => console.error("Error:", error));
-            },
-            (error: any) => console.log("Error signing in", error)
-          );
-        });
-      } else {
-        console.error("Google API library is not loaded.");
-      }
-    };
-
-    // Delay the initialization to wait for the Google API script to load
-    const scriptLoadInterval = setInterval(() => {
-      if (window.gapi) {
-        clearInterval(scriptLoadInterval);
-        initializeGoogleAuth();
-      }
-    }, 100);
-
-    return () => clearInterval(scriptLoadInterval); // Clean up the interval on component unmount
-  }, []);
 
   return (
     <div className="LoginForm">
@@ -137,7 +194,7 @@ const LoginForm = () => {
           <div className="">
             <div className="">
               <h2 className="text-4xl font-bold">Log in</h2>
-              <p className="text-sm mt-4 ">
+              <p className="text-sm mt-4">
                 By creating a Daily Invoice account, you agree to our <br />{" "}
                 <span className="underline text-blue-500">
                   Terms of Service
@@ -178,7 +235,7 @@ const LoginForm = () => {
                       />
                     </div>
                     <div className="mt-3">
-                      <p className="text-sm ">
+                      <p className="text-sm">
                         <Link
                           to={`/ForgetPassword`}
                           className="text-blue-500 underline"
@@ -204,10 +261,6 @@ const LoginForm = () => {
                       </p>
                     </div>
                   </div>
-
-                  {/* <div className="mt-5">
-                  <h6 className="text-center">OR</h6>
-                </div> */}
                 </form>
               </div>
             </div>
@@ -218,22 +271,16 @@ const LoginForm = () => {
               <div className="">
                 <img src={Image} alt="" className="w-96 regImage" />
               </div>
-              {/*  */}
               <div className="flex justify-center text-center">
                 <div className="">
                   <div className="my-5">
                     <h6 className="text-center">OR</h6>
                   </div>
                   <div className="">
-                    <button
+                    <div
                       id="googleSignInButton"
-                      className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md"
-                    >
-                      <span className="py-1">
-                        <FcGoogle />
-                      </span>
-                      <span>Use Google account</span>
-                    </button>
+                      className="flex justify-center"
+                    ></div>
                   </div>
                   <div className="mt-3">
                     <button className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md">
