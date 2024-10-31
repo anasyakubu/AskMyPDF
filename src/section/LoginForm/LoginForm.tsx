@@ -1,8 +1,8 @@
 import { useState, FormEvent, useEffect } from "react";
 import "./LoginForm.scss";
 import Image from "../../assets/Mobile login-bro.svg";
-import { FcGoogle } from "react-icons/fc";
-import { FaGithub } from "react-icons/fa";
+// import { FcGoogle } from "react-icons/fc";
+// import { FaGithub } from "react-icons/fa";
 import { Link, useNavigate } from "react-router-dom";
 import toast from "react-hot-toast";
 import axios from "axios";
@@ -46,7 +46,6 @@ const LoginForm = () => {
         "https://api-ask-my-pdf.vercel.app/auth/login",
         {
           ...googleUserData,
-          loginType: "google", // Add this to differentiate from regular login
         }
       );
 
@@ -62,7 +61,7 @@ const LoginForm = () => {
         localStorage.setItem("userImage", userImage || decodedToken.picture);
 
         toast.success("Successfully signed in with Google!");
-        navigate("/Dashboard");
+        navigate("/chat");
       }
     } catch (error: any) {
       console.error("Error signing in with Google:", error);
@@ -146,7 +145,6 @@ const LoginForm = () => {
         {
           email,
           password,
-          loginType: "regular", // Add this to differentiate from Google login
         }
       );
 
@@ -170,7 +168,7 @@ const LoginForm = () => {
         toast.error(response.data.error);
       } else {
         toast.success(response.data.message);
-        navigate("/Dashboard");
+        navigate("/chat");
       }
     } catch (error: any) {
       if (error.response) {
@@ -283,12 +281,12 @@ const LoginForm = () => {
                     ></div>
                   </div>
                   <div className="mt-3">
-                    <button className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md">
+                    {/* <button className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md">
                       <span className="py-1">
                         <FaGithub />
                       </span>
                       <span>Use Github account</span>
-                    </button>
+                    </button> */}
                   </div>
                 </div>
               </div>

@@ -181,7 +181,7 @@ const RegisterForm = () => {
                     </button>
                   </div>
                   <div className="mt-3">
-                    <button className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md">
+                    <button className="flex gap-3 border border-gray-900 p-2 text-sm px-16 lg:px-32 text-center rounded-md" >
                       <span className="py-1">
                         <FaGithub />
                       </span>
