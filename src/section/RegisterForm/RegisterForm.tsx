@@ -38,7 +38,7 @@ const RegisterForm = () => {
 
     try {
       const { data } = await axios.post(
-        "https://api-daily-invoice.vercel.app/auth/user/register",
+        "https://api-ask-my-pdf.vercel.app/auth/register",
         {
           name,
           email,
@@ -50,7 +50,7 @@ const RegisterForm = () => {
       } else {
         setData({ name: "", email: "", password: "" });
         toast.success("Account Created Successfully");
-        navigate("/Login");
+        navigate("/auth");
       }
     } catch (error: any) {
       if (error.response) {

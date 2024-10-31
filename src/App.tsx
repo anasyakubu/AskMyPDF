@@ -8,6 +8,8 @@ import TextImage from "./pages/TextImage/TextImage";
 import Landing from "./pages/Landing/Landing";
 import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
+import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
+import VerifyEmail from "./section/VerifyEmail/VerifyEmail";
 // import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -26,6 +28,8 @@ function App() {
             {/* auth routes */}
             <Route path="/auth" element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
+            <Route path="/ForgetPassword" element={<ForgetPassword />} />
+            <Route path="/VerifyEmail" element={<VerifyEmail />} />
           </Routes>
         </BrowserRouter>
       </div>

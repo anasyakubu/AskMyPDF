@@ -1,0 +1,15 @@
+@media (max-width: 600px) {
+  .VerifyEmailForm {
+    .p-32 {
+      padding: 2%;
+
+      .p-10 {
+        padding: 4%;
+      }
+
+      .regImage {
+        display: none;
+      }
+    }
+  }
+}

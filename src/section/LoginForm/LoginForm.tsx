@@ -42,7 +42,7 @@ const LoginForm = () => {
 
     try {
       const response = await axios.post(
-        "https://api-daily-invoice.vercel.app/auth/user/login",
+        "https://api-ask-my-pdf.vercel.app/auth/login",
         { email, password }
       );
 
@@ -87,7 +87,7 @@ const LoginForm = () => {
       if (window.gapi) {
         window.gapi.load("auth2", () => {
           const auth2 = window.gapi.auth2.init({
-            client_id: "YOUR_GOOGLE_CLIENT_ID",
+            client_id: import.meta.env.VITE_GOOGLE_CLIENT_ID,
           });
 
           auth2.attachClickHandler(
@@ -96,7 +96,7 @@ const LoginForm = () => {
             (googleUser: any) => {
               const token = googleUser.getAuthResponse().id_token;
 
-              fetch("http://YOUR_BACKEND_URL/auth/google", {
+              fetch("https://api-ask-my-pdf.vercel.app/auth/google", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify({ id_token: token }),
