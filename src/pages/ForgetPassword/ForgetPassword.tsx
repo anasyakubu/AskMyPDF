@@ -11,6 +11,7 @@ const ForgetPassword = () => {
         <title>Forget Password ~ Daily Invoice</title>
       </Helmet> */}
       <Nav />
+      <div className="mt-16"></div>
       <ForgetPasswordForm />
       <Footer />
     </div>
