@@ -53,13 +53,14 @@ const VerifyEmailForm = () => {
 
   const handleResend = async () => {
     try {
-      const response = await axios.post(
-        "https://api-ask-my-pdf.vercel.app/auth/resendOPT",
-        {
+      const response = await axios
+        .post("https://api-ask-my-pdf.vercel.app/auth/resendOPT", {
           userID: localStorage.getItem("userID"),
           email: localStorage.getItem("userEmail"),
-        }
-      );
+        })
+        .then(() => {
+          console.log(response);
+        });
 
       toast.success("Code has been resent to your email address");
       window.location.reload();
