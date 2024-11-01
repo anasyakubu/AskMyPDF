@@ -1,7 +1,7 @@
 import React, { useState, useEffect, useRef } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
 import { Upload, FileText, Menu, X } from "lucide-react";
-
+import Redirect from "../../Redirect";
 // Initialize the Gemini API client
 const genAI = new GoogleGenerativeAI(
   import.meta.env.VITE_GOOGLE_GENERATIVE_AI_API_KEY
@@ -160,136 +160,141 @@ export default function DocumentQuizComponent() {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-100 to-purple-50 text-gray-900">
-      {/* Mobile Menu Button */}
-      <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-gray-50 p-2 rounded-full"
-        onClick={toggleMobileMenu}
-      >
-        {isMobileMenuOpen ? (
-          <X className="h-6 w-6 text-gray-900" />
-        ) : (
-          <Menu className="h-6 w-6 text-gray-900" />
-        )}
-      </button>
+    <>
+      <Redirect />
 
-      {/* Sidebar / Mega Menu */}
-      <div
-        className={`
+      <div className="flex h-screen bg-gradient-to-br from-gray-100 to-purple-50 text-gray-900">
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden fixed top-4 left-4 z-50 bg-gray-50 p-2 rounded-full"
+          onClick={toggleMobileMenu}
+        >
+          {isMobileMenuOpen ? (
+            <X className="h-6 w-6 text-gray-900" />
+          ) : (
+            <Menu className="h-6 w-6 text-gray-900" />
+          )}
+        </button>
+
+        {/* Sidebar / Mega Menu */}
+        <div
+          className={`
         fixed inset-0 z-40 bg-gray-900 p-4 transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         md:relative md:translate-x-0 md:w-64
       `}
-      >
-        <div className="h-full flex flex-col">
-          <input
-            type="file"
-            accept=".txt,.pdf,.doc,.docx"
-            onChange={handleFileUpload}
-            ref={fileInputRef}
-            className="hidden"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoading}
-          >
-            {file ? (
-              <>
-                <FileText className="mr-2 h-4 w-4" />
-                {file.name}
-              </>
-            ) : (
-              <>
-                <Upload className="mr-2 h-4 w-4" />
-                Upload Document
-              </>
-            )}
-          </button>
-          {file && (
-            <div className="text-white mb-4">
-              <p>File uploaded: {file.name}</p>
-            </div>
-          )}
-          {isLoading && (
-            <div className="text-white mb-4">
-              <p>Generating questions...</p>
-            </div>
-          )}
-        </div>
-      </div>
-
-      {/* Main Quiz Area */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 p-4 overflow-y-auto" ref={chatContainerRef}>
-          <div className="hidden">{documentContent}</div>
-          <h2 className="text-2xl font-bold mb-4">Document Quiz Generator</h2>
-          {questions.length > 0 && (
-            <div className="mt-4">
-              <h3 className="text-xl font-semibold mb-2">
-                Question {currentQuestionIndex + 1} of {questions.length}
-              </h3>
-              <p className="mb-4">{animatedText}</p>
-              {!isAnimating && (
-                <div className="space-y-2">
-                  {questions[currentQuestionIndex].options.map(
-                    (option, index) => (
-                      <button
-                        key={index}
-                        onClick={() => handleAnswerSelection(option)}
-                        className={`block w-full text-left p-2 rounded ${
-                          questions[currentQuestionIndex].userAnswer === option
-                            ? "bg-blue-200"
-                            : "bg-gray-100 hover:bg-gray-200"
-                        }`}
-                      >
-                        {option}
-                      </button>
-                    )
-                  )}
-                </div>
+        >
+          <div className="h-full flex flex-col">
+            <input
+              type="file"
+              accept=".txt,.pdf,.doc,.docx"
+              onChange={handleFileUpload}
+              ref={fileInputRef}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
+            >
+              {file ? (
+                <>
+                  <FileText className="mr-2 h-4 w-4" />
+                  {file.name}
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload Document
+                </>
               )}
-              <div className="mt-4 flex justify-between">
-                <button
-                  onClick={() =>
-                    setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))
-                  }
-                  disabled={currentQuestionIndex === 0}
-                  className="bg-gray-500 text-white px-4 py-2 rounded disabled:opacity-50"
-                >
-                  Previous
-                </button>
-                <button
-                  onClick={() =>
-                    setCurrentQuestionIndex((prev) =>
-                      Math.min(questions.length - 1, prev + 1)
-                    )
-                  }
-                  disabled={currentQuestionIndex === questions.length - 1}
-                  className="bg-gray-500 text-white px-4 py-2 rounded disabled:opacity-50"
-                >
-                  Next
-                </button>
+            </button>
+            {file && (
+              <div className="text-white mb-4">
+                <p>File uploaded: {file.name}</p>
               </div>
-              {questions[currentQuestionIndex].userAnswer && (
-                <div className="mt-4">
-                  <p
-                    className={`font-bold ${
-                      questions[currentQuestionIndex].isCorrect
-                        ? "text-green-500"
-                        : "text-red-500"
-                    }`}
+            )}
+            {isLoading && (
+              <div className="text-white mb-4">
+                <p>Generating questions...</p>
+              </div>
+            )}
+          </div>
+        </div>
+
+        {/* Main Quiz Area */}
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 p-4 overflow-y-auto" ref={chatContainerRef}>
+            <div className="hidden">{documentContent}</div>
+            <h2 className="text-2xl font-bold mb-4">Document Quiz Generator</h2>
+            {questions.length > 0 && (
+              <div className="mt-4">
+                <h3 className="text-xl font-semibold mb-2">
+                  Question {currentQuestionIndex + 1} of {questions.length}
+                </h3>
+                <p className="mb-4">{animatedText}</p>
+                {!isAnimating && (
+                  <div className="space-y-2">
+                    {questions[currentQuestionIndex].options.map(
+                      (option, index) => (
+                        <button
+                          key={index}
+                          onClick={() => handleAnswerSelection(option)}
+                          className={`block w-full text-left p-2 rounded ${
+                            questions[currentQuestionIndex].userAnswer ===
+                            option
+                              ? "bg-blue-200"
+                              : "bg-gray-100 hover:bg-gray-200"
+                          }`}
+                        >
+                          {option}
+                        </button>
+                      )
+                    )}
+                  </div>
+                )}
+                <div className="mt-4 flex justify-between">
+                  <button
+                    onClick={() =>
+                      setCurrentQuestionIndex((prev) => Math.max(0, prev - 1))
+                    }
+                    disabled={currentQuestionIndex === 0}
+                    className="bg-gray-500 text-white px-4 py-2 rounded disabled:opacity-50"
                   >
-                    {questions[currentQuestionIndex].isCorrect
-                      ? "Correct!"
-                      : `Incorrect. The correct answer is: ${questions[currentQuestionIndex].correctAnswer}`}
-                  </p>
+                    Previous
+                  </button>
+                  <button
+                    onClick={() =>
+                      setCurrentQuestionIndex((prev) =>
+                        Math.min(questions.length - 1, prev + 1)
+                      )
+                    }
+                    disabled={currentQuestionIndex === questions.length - 1}
+                    className="bg-gray-500 text-white px-4 py-2 rounded disabled:opacity-50"
+                  >
+                    Next
+                  </button>
                 </div>
-              )}
-            </div>
-          )}
+                {questions[currentQuestionIndex].userAnswer && (
+                  <div className="mt-4">
+                    <p
+                      className={`font-bold ${
+                        questions[currentQuestionIndex].isCorrect
+                          ? "text-green-500"
+                          : "text-red-500"
+                      }`}
+                    >
+                      {questions[currentQuestionIndex].isCorrect
+                        ? "Correct!"
+                        : `Incorrect. The correct answer is: ${questions[currentQuestionIndex].correctAnswer}`}
+                    </p>
+                  </div>
+                )}
+              </div>
+            )}
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }

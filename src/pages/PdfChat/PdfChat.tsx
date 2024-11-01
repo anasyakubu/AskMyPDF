@@ -1,5 +1,6 @@
 import React, { useState, useRef, useEffect } from "react";
 import { GoogleGenerativeAI } from "@google/generative-ai";
+import Redirect from "../../Redirect";
 import {
   MessageSquare,
   Send,
@@ -153,149 +154,153 @@ export default function EnhancedPDFChatComponent() {
   };
 
   return (
-    <div className="flex h-screen bg-gradient-to-br from-gray-100 to-purple-50 text-gray-900">
-      {/* Mobile Menu Button */}
-      <button
-        className="md:hidden fixed top-4 left-4 z-50 bg-gray-50 p-2 rounded-full"
-        onClick={toggleMobileMenu}
-      >
-        {isMobileMenuOpen ? (
-          <X className="h-6 w-6 text-gray-900" />
-        ) : (
-          <Menu className="h-6 w-6 text-gray-900" />
-        )}
-      </button>
+    <>
+      <Redirect />
 
-      {/* Sidebar / Mega Menu */}
-      <div
-        className={`
+      <div className="flex h-screen bg-gradient-to-br from-gray-100 to-purple-50 text-gray-900">
+        {/* Mobile Menu Button */}
+        <button
+          className="md:hidden fixed top-4 left-4 z-50 bg-gray-50 p-2 rounded-full"
+          onClick={toggleMobileMenu}
+        >
+          {isMobileMenuOpen ? (
+            <X className="h-6 w-6 text-gray-900" />
+          ) : (
+            <Menu className="h-6 w-6 text-gray-900" />
+          )}
+        </button>
+
+        {/* Sidebar / Mega Menu */}
+        <div
+          className={`
         fixed inset-0 z-40 bg-gray-900 p-4 transition-transform duration-300 ease-in-out
         ${isMobileMenuOpen ? "translate-x-0" : "-translate-x-full"}
         md:relative md:translate-x-0 md:w-64
       `}
-      >
-        <div className="h-full flex flex-col">
-          <input
-            type="file"
-            accept=".pdf,.doc,.docx"
-            onChange={handleFileUpload}
-            ref={fileInputRef}
-            className="hidden"
-          />
-          <button
-            onClick={() => fileInputRef.current?.click()}
-            className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
-            disabled={isLoading}
-          >
-            {file ? (
-              <>
-                <FileText className="mr-2 h-4 w-4" />
-                {file.name}
-              </>
-            ) : (
-              <>
-                <Upload className="mr-2 h-4 w-4" />
-                Upload PDF/DOC
-              </>
-            )}
-          </button>
-          <div className="flex-grow overflow-y-auto">
-            {file && (
-              <button className="w-full text-left py-2 px-3 bg-gray-200 text-black mb-1 rounded-lg hover:bg-gray-800 hover:text-gray-100 transition duration-200 ease-in-out flex items-center">
-                <MessageSquare className="mr-2 h-4 w-4" />
-                Current Document Chat
-              </button>
-            )}
+        >
+          <div className="h-full flex flex-col">
+            <input
+              type="file"
+              accept=".pdf,.doc,.docx"
+              onChange={handleFileUpload}
+              ref={fileInputRef}
+              className="hidden"
+            />
+            <button
+              onClick={() => fileInputRef.current?.click()}
+              className="w-full bg-purple-600 hover:bg-purple-700 text-white font-bold py-2 px-4 rounded-lg transition duration-200 ease-in-out transform hover:scale-105 flex items-center justify-center mb-4 disabled:opacity-50 disabled:cursor-not-allowed"
+              disabled={isLoading}
+            >
+              {file ? (
+                <>
+                  <FileText className="mr-2 h-4 w-4" />
+                  {file.name}
+                </>
+              ) : (
+                <>
+                  <Upload className="mr-2 h-4 w-4" />
+                  Upload PDF/DOC
+                </>
+              )}
+            </button>
+            <div className="flex-grow overflow-y-auto">
+              {file && (
+                <button className="w-full text-left py-2 px-3 bg-gray-200 text-black mb-1 rounded-lg hover:bg-gray-800 hover:text-gray-100 transition duration-200 ease-in-out flex items-center">
+                  <MessageSquare className="mr-2 h-4 w-4" />
+                  Current Document Chat
+                </button>
+              )}
+            </div>
           </div>
         </div>
-      </div>
 
-      {/* Main Chat Area */}
-      <div className="flex-1 flex flex-col">
-        <div className="flex-1 p-4 overflow-y-auto" ref={chatContainerRef}>
-          {messages.map((message, i) => (
-            <div
-              key={i}
-              className={`flex ${
-                message.role === "user" ? "justify-end" : "justify-start"
-              } mb-4`}
-            >
-              {message.role === "user" ? (
-                <div className="bg-gray-900 text-white rounded-full p-2 ml-2">
-                  <User className="h-4 w-4" />
+        {/* Main Chat Area */}
+        <div className="flex-1 flex flex-col">
+          <div className="flex-1 p-4 overflow-y-auto" ref={chatContainerRef}>
+            {messages.map((message, i) => (
+              <div
+                key={i}
+                className={`flex ${
+                  message.role === "user" ? "justify-end" : "justify-start"
+                } mb-4`}
+              >
+                {message.role === "user" ? (
+                  <div className="bg-gray-900 text-white rounded-full p-2 ml-2">
+                    <User className="h-4 w-4" />
+                  </div>
+                ) : (
+                  <div className="bg-purple-600 text-white rounded-full p-2 mr-2">
+                    <Bot className="h-4 w-4" />
+                  </div>
+                )}
+                <div
+                  className={`rounded-lg p-3 max-w-[80%] ${
+                    message.role === "user"
+                      ? "bg-gray-900 text-white"
+                      : "bg-gray-100 text-gray-900"
+                  } shadow-lg`}
+                >
+                  <pre className="whitespace-pre-wrap font-sans">
+                    {message.content}
+                  </pre>
                 </div>
-              ) : (
+              </div>
+            ))}
+            {isTyping && (
+              <div className="flex justify-start mb-4">
                 <div className="bg-purple-600 text-white rounded-full p-2 mr-2">
                   <Bot className="h-4 w-4" />
                 </div>
-              )}
-              <div
-                className={`rounded-lg p-3 max-w-[80%] ${
-                  message.role === "user"
-                    ? "bg-gray-900 text-white"
-                    : "bg-gray-100 text-gray-900"
-                } shadow-lg`}
-              >
-                <pre className="whitespace-pre-wrap font-sans">
-                  {message.content}
-                </pre>
+                <div className="bg-gray-100 text-gray-900 rounded-lg p-3 max-w-[80%] shadow-lg">
+                  <span className="animate-pulse">Typing...</span>
+                </div>
               </div>
-            </div>
-          ))}
-          {isTyping && (
-            <div className="flex justify-start mb-4">
-              <div className="bg-purple-600 text-white rounded-full p-2 mr-2">
-                <Bot className="h-4 w-4" />
+            )}
+            {currentResponse && (
+              <div className="flex justify-start mb-4">
+                <div className="bg-purple-600 text-white rounded-full p-2 mr-2">
+                  <Bot className="h-4 w-4" />
+                </div>
+                <div className="bg-gray-100 text-gray-900 rounded-lg p-3 max-w-[80%] shadow-lg">
+                  <pre className="whitespace-pre-wrap font-sans">
+                    {currentResponse}
+                  </pre>
+                </div>
               </div>
-              <div className="bg-gray-100 text-gray-900 rounded-lg p-3 max-w-[80%] shadow-lg">
-                <span className="animate-pulse">Typing...</span>
-              </div>
-            </div>
-          )}
-          {currentResponse && (
-            <div className="flex justify-start mb-4">
-              <div className="bg-purple-600 text-white rounded-full p-2 mr-2">
-                <Bot className="h-4 w-4" />
-              </div>
-              <div className="bg-gray-100 text-gray-900 rounded-lg p-3 max-w-[80%] shadow-lg">
-                <pre className="whitespace-pre-wrap font-sans">
-                  {currentResponse}
-                </pre>
-              </div>
-            </div>
-          )}
-        </div>
+            )}
+          </div>
 
-        {/* Input Area */}
-        <div className="p-4 bg-gray-50 border-t border-gray-300">
-          <form
-            onSubmit={(e) => {
-              e.preventDefault();
-              handleSend();
-            }}
-            className="flex space-x-2"
-          >
-            <input
-              type="text"
-              value={input}
-              onChange={(e) => setInput(e.target.value)}
-              placeholder="Chat about the document or ask questions..."
-              className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
-            />
-            <button
-              type="submit"
-              disabled={isLoading || !file || !documentContent}
-              className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+          {/* Input Area */}
+          <div className="p-4 bg-gray-50 border-t border-gray-300">
+            <form
+              onSubmit={(e) => {
+                e.preventDefault();
+                handleSend();
+              }}
+              className="flex space-x-2"
             >
-              {isLoading ? (
-                <Loader2 className="h-4 w-4 animate-spin" />
-              ) : (
-                <Send className="h-4 w-4" />
-              )}
-            </button>
-          </form>
+              <input
+                type="text"
+                value={input}
+                onChange={(e) => setInput(e.target.value)}
+                placeholder="Chat about the document or ask questions..."
+                className="flex-1 px-4 py-2 border border-gray-300 rounded-lg focus:outline-none focus:ring-2 focus:ring-purple-600"
+              />
+              <button
+                type="submit"
+                disabled={isLoading || !file || !documentContent}
+                className="bg-purple-600 text-white px-4 py-2 rounded-lg hover:bg-purple-700 transition duration-200 ease-in-out disabled:opacity-50 disabled:cursor-not-allowed"
+              >
+                {isLoading ? (
+                  <Loader2 className="h-4 w-4 animate-spin" />
+                ) : (
+                  <Send className="h-4 w-4" />
+                )}
+              </button>
+            </form>
+          </div>
         </div>
       </div>
-    </div>
+    </>
   );
 }
