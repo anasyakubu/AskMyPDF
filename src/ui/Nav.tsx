@@ -62,7 +62,7 @@ export default function Nav() {
               <span className="text-white">Get started</span>
             </a>
             <a
-              href="/Join"
+              href="/register"
               className="p-2 px-5 text-sm bg-transparent border border-black  rounded-sm m-2 icon"
             >
               <span className="text-black ">Register</span>
