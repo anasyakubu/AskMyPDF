@@ -11,8 +11,8 @@ const navigation = [
   { name: "Quiz", href: "/quiz" },
   { name: "Chat", href: "/chat" },
   { name: "Chat PDF", href: "/pdfChat" },
-  { name: "Pricing", href: "/pricing" },
-  { name: "Contact", href: "/contact" },
+  { name: "Pricing", href: "/coming-soon" },
+  { name: "Contact", href: "/coming-soon" },
 ];
 
 export default function Nav() {

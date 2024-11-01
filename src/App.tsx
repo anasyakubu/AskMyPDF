@@ -10,6 +10,7 @@ import Login from "./pages/Login/Login";
 import Register from "./pages/Register/Register";
 import ForgetPassword from "./pages/ForgetPassword/ForgetPassword";
 import VerifyEmail from "./pages/VerifyEmail/VerifyEmail";
+import ComingSoon from "./ComingSoon/ComingSoon";
 // import { Toaster } from "react-hot-toast";
 
 function App() {
@@ -25,6 +26,7 @@ function App() {
             <Route path="/TextImage" element={<TextImage />}></Route>
             <Route path="/pdfChat" element={<PdfChat />}></Route>
             <Route path="/chat" element={<Chat />}></Route>
+            <Route path="/coming-soon" element={<ComingSoon />}></Route>
             {/* auth routes */}
             <Route path="/auth" element={<Login />}></Route>
             <Route path="/register" element={<Register />}></Route>
