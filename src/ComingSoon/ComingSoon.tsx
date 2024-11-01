@@ -1,7 +1,61 @@
-// import React from "react";
+import { useState, FormEvent } from "react";
 import { Moon, Brain, Sparkles, Timer } from "lucide-react";
+import { toast } from "react-hot-toast";
+import { useNavigate } from "react-router-dom";
+import axios from "axios";
+
+interface FormData {
+  email: string;
+}
 
 const ComingSoon = () => {
+  const navigate = useNavigate();
+  const [loading, setLoading] = useState(false);
+  const [data, setData] = useState<FormData>({
+    email: "",
+  });
+
+  // handle submission
+  const handleSubmission = async (e: FormEvent) => {
+    e.preventDefault();
+    setLoading(true);
+    const { email } = data;
+
+    if (data.email === "") {
+      toast.error("email required");
+    }
+
+    try {
+      const { data } = await axios.post(
+        "https://api-ask-my-pdf.vercel.app/add/subscriber",
+        {
+          email,
+        }
+      );
+      if (data.error) {
+        toast.error(data.error);
+      } else {
+        setData({ email: "" });
+        toast.success("Thank You...");
+        navigate("/");
+      }
+    } catch (error: any) {
+      if (error.response) {
+        // Request made and server responded
+        toast.error(error.response.data.message);
+      } else if (error.request) {
+        // The request was made but no response was received
+        toast.error("No response received from the server.");
+      } else {
+        // Something happened in setting up the request that triggered an Error
+        toast.error("Error in setting up the request.");
+      }
+      console.log(error);
+    } finally {
+      setLoading(false); // Reset loading state regardless of success or failure
+    }
+  };
+
   return (
     <div className="min-h-screen bg-purple-600 flex flex-col items-center justify-center text-white p-6">
       {/* Neural Network Background Pattern */}
@@ -45,16 +99,23 @@ const ComingSoon = () => {
         </p>
 
         {/* Email Subscription */}
-        <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
-          <input
-            type="email"
-            placeholder="Enter your email"
-            className="w-full sm:w-72 px-6 py-3 rounded-lg bg-purple-700 border border-purple-400 text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
-          />
-          <button className="w-full sm:w-auto px-8 py-3 bg-white text-purple-600 rounded-lg font-semibold hover:bg-purple-100 transition-colors duration-200">
-            Notify Me
-          </button>
-        </div>
+        <form onSubmit={handleSubmission}>
+          <div className="flex flex-col sm:flex-row gap-4 justify-center items-center max-w-md mx-auto">
+            <input
+              type="email"
+              placeholder="Enter your email"
+              className="w-full sm:w-72 px-6 py-3 rounded-lg bg-purple-700 border border-purple-400 text-white placeholder-purple-300 focus:outline-none focus:ring-2 focus:ring-purple-400"
+              value={data.email}
+              onChange={(e) => setData({ ...data, email: e.target.value })}
+            />
+            <button
+              type="submit"
+              className="w-full sm:w-auto px-8 py-3 bg-white text-purple-600 rounded-lg font-semibold hover:bg-purple-100 transition-colors duration-200"
+            >
+              {loading ? "Subscribing..." : " Notify Me"}
+            </button>
+          </div>
+        </form>
 
         {/* Features */}
         <div className="mt-16 grid grid-cols-1 sm:grid-cols-3 gap-8 text-center">
